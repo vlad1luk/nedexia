@@ -36,7 +36,7 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="/eden"
+            href="/espace"
             className="rounded-full bg-navy px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-navy-deep"
           >
             Commencer
@@ -75,7 +75,7 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="/eden"
+            href="/espace"
             onClick={() => setOpen(false)}
             className="mt-2 block rounded-full bg-navy px-5 py-2.5 text-center text-base font-semibold text-white"
           >

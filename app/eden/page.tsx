@@ -66,7 +66,7 @@ export default function EdenPage() {
           <Reveal delay={0.3}>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
               <Link
-                href="/score"
+                href="/espace"
                 className="rounded-full bg-navy px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-navy/20 transition-all hover:-translate-y-0.5 hover:bg-navy-deep"
               >
                 Commencer le diagnostic
@@ -158,7 +158,7 @@ export default function EdenPage() {
               <div className="absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-teal/20 blur-3xl" />
             </div>
             <h2 className="relative text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Le diagnostic prend 45 minutes.
+              Le diagnostic prend sept minutes.
               <br />
               Le reste, Eden le découpe pour vous.
             </h2>
@@ -168,7 +168,7 @@ export default function EdenPage() {
             </p>
             <div className="relative mt-8">
               <Link
-                href="/score"
+                href="/espace"
                 className="inline-block rounded-full bg-white px-8 py-3.5 text-base font-semibold text-navy transition-all hover:-translate-y-0.5 hover:bg-leaf hover:text-navy-deep"
               >
                 Commencer le diagnostic
