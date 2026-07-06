@@ -83,6 +83,23 @@ body {
   }
 }
 
+/* Apparition du menu compte dans l'en-tête de l'espace */
+@keyframes menu-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-menu-pop {
+  animation: menu-pop 0.16s ease-out both;
+  transform-origin: top right;
+}
+
 @keyframes float-subtle {
   0%,
   100% {
@@ -100,7 +117,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-up,
   .animate-float,
-  .animate-float-subtle {
+  .animate-float-subtle,
+  .animate-menu-pop {
     animation: none;
   }
 }

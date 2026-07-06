@@ -1,7 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import symbole from "@/public/symbole-eden.png";
 
 function safeNext(): string {
   if (typeof window === "undefined") return "/espace/entreprise";
@@ -38,7 +40,7 @@ export default function ConnexionPage() {
     if (error) setError(error.message);
   }
 
-  async function signInWithEmail(e: React.FormEvent) {
+  async function signInWithEmail(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const value = email.trim();
     if (!value) return;
@@ -57,77 +59,113 @@ export default function ConnexionPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-svh max-w-md flex-col justify-center px-4 py-12">
-      <div className="rounded-2xl border border-navy/10 bg-white p-8 shadow-sm">
-        <div className="mb-6 flex flex-col items-center text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-navy text-xl font-bold text-white">
-            E
-          </span>
-          <h1 className="mt-4 text-xl font-bold tracking-tight text-navy">Connexion à Eden</h1>
-          <p className="mt-1 text-sm text-foreground/55">
-            Accédez à votre espace avec Google ou votre courriel.
-          </p>
+    <div className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden px-4 py-16">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute -top-24 -left-32 h-96 w-96 rounded-full bg-leaf/10 blur-3xl" />
+        <div className="absolute -right-32 -bottom-32 h-104 w-104 rounded-full bg-teal/10 blur-3xl" />
+        <div className="absolute top-1/3 right-1/4 h-64 w-64 rounded-full bg-sun/5 blur-3xl" />
+      </div>
+
+      <div className="relative w-full max-w-md animate-fade-up">
+        <div className="rounded-3xl border border-navy/10 bg-white/90 p-8 shadow-xl shadow-navy/[0.07] backdrop-blur-sm sm:p-10">
+          <div className="mb-8 flex flex-col items-center text-center">
+            <span className="relative inline-flex">
+              <span
+                aria-hidden="true"
+                className="absolute -inset-2 rounded-full bg-linear-to-br from-leaf/40 to-teal/40 blur-md"
+              />
+              <span className="relative flex h-14 w-14 items-center justify-center rounded-full border border-navy/10 bg-white p-2.5 shadow-sm">
+                <Image src={symbole} alt="" className="h-auto w-full" loading="eager" />
+              </span>
+            </span>
+            <h1 className="mt-5 text-2xl font-bold tracking-tight text-navy">
+              Connexion à Eden
+            </h1>
+            <p className="mt-1.5 text-sm text-foreground/55">
+              Accédez à votre espace avec Google ou votre courriel.
+            </p>
+          </div>
+
+          {error && (
+            <p className="mb-4 rounded-xl border border-coral/20 bg-coral/5 px-4 py-2.5 text-sm text-coral">
+              {error}
+            </p>
+          )}
+
+          {status === "sent" ? (
+            <div className="rounded-2xl border border-leaf/25 bg-leaf/10 px-5 py-6 text-center text-sm text-navy">
+              <span className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-leaf/20 text-leaf-deep">
+                <svg
+                  viewBox="0 0 20 20"
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M4 10.5l4 4 8-9" />
+                </svg>
+              </span>
+              <p className="mt-3 font-semibold">Vérifiez votre boîte courriel</p>
+              <p className="mt-1 text-foreground/60">
+                Un lien de connexion a été envoyé à <strong>{email}</strong>.
+              </p>
+              <button
+                type="button"
+                onClick={() => setStatus("idle")}
+                className="mt-4 text-xs font-medium text-teal underline underline-offset-2 transition-opacity hover:opacity-75"
+              >
+                Utiliser une autre adresse
+              </button>
+            </div>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={signInWithGoogle}
+                className="flex w-full items-center justify-center gap-3 rounded-full border border-navy/15 bg-white px-4 py-3 text-sm font-semibold text-navy transition-all hover:border-navy/30 hover:shadow-sm"
+              >
+                <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1Z" />
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23Z" />
+                  <path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84Z" />
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.3 9.14 5.38 12 5.38Z" />
+                </svg>
+                Continuer avec Google
+              </button>
+
+              <div className="my-6 flex items-center gap-3 text-xs text-foreground/40">
+                <span className="h-px flex-1 bg-navy/10" />
+                ou
+                <span className="h-px flex-1 bg-navy/10" />
+              </div>
+
+              <form onSubmit={signInWithEmail} className="space-y-3">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="vous@entreprise.com"
+                  className="w-full rounded-xl border border-navy/15 bg-background px-4 py-3 text-sm text-navy outline-none transition-colors placeholder:text-foreground/35 focus:border-teal/60 focus:ring-2 focus:ring-teal/15"
+                />
+                <button
+                  type="submit"
+                  disabled={status === "loading" || !email.trim()}
+                  className="w-full rounded-full bg-navy px-4 py-3 text-sm font-semibold text-white shadow-md shadow-navy/20 transition-all hover:-translate-y-px hover:bg-navy-deep hover:shadow-lg hover:shadow-navy/25 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                >
+                  {status === "loading" ? "Envoi…" : "Recevoir un lien de connexion"}
+                </button>
+              </form>
+            </>
+          )}
         </div>
 
-        {error && (
-          <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
-        )}
-
-        {status === "sent" ? (
-          <div className="rounded-lg bg-leaf/10 px-4 py-5 text-center text-sm text-navy">
-            <p className="font-semibold">Vérifiez votre boîte courriel</p>
-            <p className="mt-1 text-foreground/60">
-              Un lien de connexion a été envoyé à <strong>{email}</strong>.
-            </p>
-            <button
-              type="button"
-              onClick={() => setStatus("idle")}
-              className="mt-3 text-xs font-medium text-teal underline"
-            >
-              Utiliser une autre adresse
-            </button>
-          </div>
-        ) : (
-          <>
-            <button
-              type="button"
-              onClick={signInWithGoogle}
-              className="flex w-full items-center justify-center gap-3 rounded-full border border-navy/15 bg-white px-4 py-2.5 text-sm font-semibold text-navy transition-colors hover:bg-navy/5"
-            >
-              <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1Z" />
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23Z" />
-                <path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84Z" />
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.3 9.14 5.38 12 5.38Z" />
-              </svg>
-              Continuer avec Google
-            </button>
-
-            <div className="my-5 flex items-center gap-3 text-xs text-foreground/40">
-              <span className="h-px flex-1 bg-navy/10" />
-              ou
-              <span className="h-px flex-1 bg-navy/10" />
-            </div>
-
-            <form onSubmit={signInWithEmail} className="space-y-3">
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="vous@entreprise.com"
-                className="w-full rounded-lg border border-navy/15 bg-background px-4 py-2.5 text-sm text-navy outline-none placeholder:text-foreground/40 focus:border-navy/40"
-              />
-              <button
-                type="submit"
-                disabled={status === "loading" || !email.trim()}
-                className="w-full rounded-full bg-navy px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:bg-navy-deep disabled:opacity-50"
-              >
-                {status === "loading" ? "Envoi…" : "Recevoir un lien de connexion"}
-              </button>
-            </form>
-          </>
-        )}
+        <p className="mt-6 text-center text-xs text-foreground/45">
+          Première visite ? Le lien de connexion crée votre espace automatiquement.
+        </p>
       </div>
     </div>
   );
