@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import AppHeader from "./app-header";
 
 export const metadata: Metadata = {
   title: "Votre espace — Nedexia",
@@ -20,18 +19,10 @@ export default async function AppLayout({
   } = await supabase.auth.getUser();
   if (!user) redirect("/connexion");
 
-  const { data: profileRow } = await supabase
-    .from("profiles")
-    .select("company_name")
-    .eq("id", user.id)
-    .maybeSingle();
-
+  // L'identité et le compte vivent dans le rail du cabinet (workspace) —
+  // le layout se contente de donner toute la hauteur à la page.
   return (
     <div className="flex h-svh flex-col bg-background">
-      <AppHeader
-        companyName={profileRow?.company_name ?? null}
-        email={user.email ?? ""}
-      />
       <main className="min-h-0 flex-1">{children}</main>
     </div>
   );

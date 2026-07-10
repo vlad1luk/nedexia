@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useRef, useState } from "react";
+import { useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Tier } from "@/lib/espace/types";
 
@@ -14,7 +14,8 @@ export type DocItem = {
 };
 
 type Props = {
-  initialDocs: DocItem[];
+  docs: DocItem[];
+  setDocs: Dispatch<SetStateAction<DocItem[]>>;
   onScore: (score: number, tier: Tier) => void;
 };
 
@@ -39,6 +40,10 @@ function statusChip(doc: DocItem): { label: string; cls: string } {
     case "failed":
       return { label: "Analyse impossible", cls: "bg-coral/10 text-coral" };
     case "unsupported":
+      if (doc.name.endsWith(".md")) {
+        // Livrable rédigé par Eden (généré en séance, stocké en Markdown).
+        return { label: "Rédigé par Eden", cls: "bg-teal/10 text-teal" };
+      }
       return { label: "Format non lu (PDF conseillé)", cls: "bg-navy/8 text-foreground/55" };
     default:
       return { label: "En attente d'analyse", cls: "bg-navy/8 text-foreground/55" };
@@ -50,8 +55,7 @@ function statusChip(doc: DocItem): { label: string; cls: string } {
  * dans la foulée : le dossier s'enrichit et le score peut monter. Pas de
  * dossiers ni d'arborescence : le strict utile.
  */
-export function DocumentsDock({ initialDocs, onScore }: Props) {
-  const [docs, setDocs] = useState<DocItem[]>(initialDocs);
+export function DocumentsDock({ docs, setDocs, onScore }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);

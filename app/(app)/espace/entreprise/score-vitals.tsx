@@ -1,14 +1,15 @@
 "use client";
 
-import { animate, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { AnimatePresence, animate, motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
 import { TIER_LABELS, type Tier } from "@/lib/espace/types";
 
+/** Teintes des paliers, calibrées pour le rail navy du cabinet. */
 const TIER_STYLES: Record<Tier, string> = {
-  rouge: "bg-coral/10 text-coral",
-  orange: "bg-sun/20 text-navy",
-  jaune: "bg-sun/15 text-navy",
-  vert: "bg-leaf/15 text-leaf-deep",
+  rouge: "bg-coral/20 text-coral",
+  orange: "bg-sun/20 text-sun",
+  jaune: "bg-sun/15 text-sun",
+  vert: "bg-leaf/20 text-leaf",
 };
 
 type Props = {
@@ -18,15 +19,37 @@ type Props = {
 };
 
 /**
- * Les signes vitaux du terrain : anneau de score animé + trajectoire.
- * Le score n'est pas une note d'examen — c'est l'état de préparation du sol.
+ * Les signes vitaux du terrain, à demeure dans le rail sombre : anneau de
+ * score animé + trajectoire. Le score n'est pas une note d'examen — c'est
+ * l'état de préparation du sol.
  */
 export function ScoreVitals({ score, series }: Props) {
   const total = score?.total ?? 0;
   const [display, setDisplay] = useState(0);
+  const prevTotal = useRef(0);
+  const [float, setFloat] = useState<{ id: number; delta: number } | null>(
+    null
+  );
 
   useEffect(() => {
-    const controls = animate(0, total, {
+    const from = prevTotal.current;
+    const delta = total - from;
+    prevTotal.current = total;
+    // Le « +N » ne flotte que sur un vrai changement, pas au premier rendu.
+    if (from > 0 && delta !== 0) {
+      setFloat({ id: Date.now(), delta });
+      const t = setTimeout(() => setFloat(null), 1800);
+      const controls = animate(from, total, {
+        duration: 1.3,
+        ease: [0.32, 0.72, 0, 1],
+        onUpdate: (v) => setDisplay(Math.round(v)),
+      });
+      return () => {
+        clearTimeout(t);
+        controls.stop();
+      };
+    }
+    const controls = animate(from, total, {
       duration: 1.3,
       ease: [0.32, 0.72, 0, 1],
       onUpdate: (v) => setDisplay(Math.round(v)),
@@ -36,7 +59,7 @@ export function ScoreVitals({ score, series }: Props) {
 
   if (!score) {
     return (
-      <p className="text-sm leading-relaxed text-foreground/55">
+      <p className="text-sm leading-relaxed text-white/55">
         Votre score apparaîtra après le diagnostic.
       </p>
     );
@@ -54,7 +77,7 @@ export function ScoreVitals({ score, series }: Props) {
           <defs>
             <linearGradient id="score-grad" x1="0" y1="1" x2="1" y2="0">
               <stop offset="0%" stopColor="#99ca3c" />
-              <stop offset="100%" stopColor="#149696" />
+              <stop offset="100%" stopColor="#ffc20e" />
             </linearGradient>
           </defs>
           <circle
@@ -62,8 +85,8 @@ export function ScoreVitals({ score, series }: Props) {
             cy="64"
             r={R}
             fill="none"
-            stroke="#313184"
-            strokeOpacity="0.08"
+            stroke="#ffffff"
+            strokeOpacity="0.1"
             strokeWidth="10"
           />
           <motion.circle
@@ -82,13 +105,29 @@ export function ScoreVitals({ score, series }: Props) {
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-eden text-[2.4rem] font-semibold leading-none text-navy tabular-nums">
+          <span className="font-eden text-[2.4rem] font-semibold leading-none text-white tabular-nums">
             {display}
           </span>
-          <span className="mt-1 text-[0.6rem] font-medium uppercase tracking-[0.16em] text-foreground/40">
+          <span className="mt-1 text-[0.6rem] font-medium uppercase tracking-[0.16em] text-white/40">
             Score / 100
           </span>
         </div>
+        <AnimatePresence>
+          {float && (
+            <motion.span
+              key={float.id}
+              initial={{ opacity: 0, y: 6, scale: 0.9 }}
+              animate={{ opacity: 1, y: -14, scale: 1 }}
+              exit={{ opacity: 0, y: -28 }}
+              transition={{ duration: 1.1, ease: "easeOut" }}
+              className={`absolute -top-1 left-1/2 -translate-x-1/2 text-sm font-bold tabular-nums ${
+                float.delta > 0 ? "text-leaf" : "text-coral"
+              }`}
+            >
+              {float.delta > 0 ? `+${float.delta}` : float.delta}
+            </motion.span>
+          )}
+        </AnimatePresence>
       </div>
 
       <span
@@ -100,10 +139,10 @@ export function ScoreVitals({ score, series }: Props) {
       {series.length >= 2 && (
         <div className="flex w-full flex-col items-center gap-1">
           <Sparkline series={series} />
-          <span className="text-xs text-foreground/50">
+          <span className="text-xs text-white/45">
             {delta > 0 ? (
               <>
-                <strong className="font-semibold text-leaf-deep">
+                <strong className="font-semibold text-leaf">
                   +{delta} points
                 </strong>{" "}
                 depuis le départ
@@ -146,7 +185,7 @@ function Sparkline({ series }: { series: number[] }) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx={last.x} cy={last.y} r="3" fill="#149696" />
+      <circle cx={last.x} cy={last.y} r="3" fill="#ffc20e" />
     </svg>
   );
 }

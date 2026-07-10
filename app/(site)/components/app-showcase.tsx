@@ -1,42 +1,93 @@
 "use client";
 
+import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
-import PhoneFrame, { ScreenPlaceholder } from "./phone-frame";
+import PhoneFrame from "./phone-frame";
 
-const features = [
+type Media =
+  | { type: "video"; src: string }
+  | { type: "image"; src: string };
+
+const features: readonly {
+  id: string;
+  kicker: string;
+  title: string;
+  body: string;
+  screen: string;
+  accent: string;
+  media: Media;
+}[] = [
   {
     id: "compat",
     kicker: "01 · Compatibilité",
     title: "Des profils choisis, jamais une file d’attente",
     body: "Quelques entreprises compatibles, sélectionnées selon vos intérêts, votre secteur et vos objectifs. Le volume n’a jamais fait une bonne rencontre.",
-    screen: "Écran — Profils compatibles",
+    screen: "La carte d’entreprise dans l’application",
     accent: "#149696",
-  },
-  {
-    id: "intentions",
-    kicker: "02 · Intentions",
-    title: "Vos intentions donnent le cap",
-    body: "S’allier, céder, acquérir, investir : vous déclarez ce que vous cherchez, et chaque suggestion s’ajuste à votre trajectoire.",
-    screen: "Écran — Vos intentions",
-    accent: "#0087cb",
+    media: { type: "video", src: "/cardEntrepriseVideo.MP4" },
   },
   {
     id: "rencontre",
-    kicker: "03 · Mise en relation",
+    kicker: "02 · Mise en relation",
     title: "La rencontre, au moment juste",
     body: "L’échange s’ouvre seulement quand les deux parties acceptent. Confidentiel, documenté, à votre rythme — jusqu’à la poignée de main.",
-    screen: "Écran — Mise en relation",
+    screen: "Le match entre deux entreprises",
     accent: "#99ca3c",
+    media: { type: "video", src: "/matchvideo.MP4" },
+  },
+  {
+    id: "messagerie",
+    kicker: "03 · Messagerie",
+    title: "Une messagerie confidentielle",
+    body: "L’échange sécurisé entre dirigeants : révélation progressive, NDA électronique intégré, et le contrôle de qui peut vous voir — et quand.",
+    screen: "La conversation entre deux représentants",
+    accent: "#0087cb",
+    media: { type: "image", src: "/okMessagerieImage.PNG" },
+  },
+  {
+    id: "pipeline",
+    kicker: "04 · Pipeline",
+    title: "Du match au deal",
+    body: "Chaque rapprochement est suivi : connexions, statuts, NDA signés, rapports. Rien ne se perd entre la rencontre et l’entente.",
+    screen: "Le suivi des échanges entre deux entreprises",
+    accent: "#f26522",
+    media: { type: "video", src: "/pipeline2.MP4" },
   },
 ] as const;
+
+function ScreenMedia({ media, label }: { media: Media; label: string }) {
+  if (media.type === "video") {
+    return (
+      <video
+        src={media.src}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        aria-label={label}
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+    );
+  }
+  return (
+    <Image
+      src={media.src}
+      alt={label}
+      fill
+      sizes="288px"
+      className="object-cover"
+    />
+  );
+}
 
 export default function AppShowcase() {
   const [active, setActive] = useState(0);
   const current = features[active];
 
   return (
-    <section id="decouvrir" className="relative bg-white py-20 sm:py-28">
+    <section id="decouvrir" className="relative overflow-hidden bg-white py-20 sm:py-28">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute -left-32 top-1/4 h-80 w-80 rounded-full bg-leaf/10 blur-3xl" />
         <div className="absolute -right-32 bottom-1/4 h-80 w-80 rounded-full bg-teal/10 blur-3xl" />
@@ -118,7 +169,7 @@ export default function AppShowcase() {
                     transition={{ duration: 0.3 }}
                     className="absolute inset-0"
                   >
-                    <ScreenPlaceholder label={current.screen} />
+                    <ScreenMedia media={current.media} label={current.screen} />
                   </motion.div>
                 </AnimatePresence>
               </PhoneFrame>

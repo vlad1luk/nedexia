@@ -202,7 +202,7 @@ export function buildTasksContext(tasks: Task[]): string {
   if (open.length === 0) {
     return [
       "## PLAN D'ACTION",
-      "Aucune tâche active. Si l'échange débouche sur des actions concrètes, crée 1 à 3 tâches datées avec l'outil create_tasks.",
+      "AUCUNE action ouverte — un tuteur ne laisse jamais son dirigeant sans prochaine étape. Avant la fin de cet échange, identifie ce qui compte le plus maintenant et crée 1 à 3 actions datées avec create_tasks, de ta propre initiative, sans demander la permission. Annonce-les ensuite en une phrase, dans le fil de la conversation.",
     ].join("\n");
   }
 
@@ -621,7 +621,8 @@ export function buildEdenSystemPrompt(
     "- Ne demande pas une information déjà présente dans le dossier. Avance vers la prochaine action.",
     "",
     "## PLAN D'ACTION — RÈGLES",
-    "- Quand un échange débouche sur des actions concrètes, crée des tâches datées avec create_tasks (verbe d'action + échéance réaliste). Une tâche est une action stratégique du monde réel — appeler, décider, chiffrer, formaliser — jamais une action d'interface. Exception : déposer un document clé dans la section Documents, quand son analyse fera avancer le dossier.",
+    "- C'est TOI qui pilotes le plan d'action : n'attends jamais qu'on te demande des tâches. Quand un échange débouche sur des actions concrètes, crée-les avec create_tasks dans le même message (verbe d'action + échéance réaliste), sans demander la permission, puis annonce-les en une phrase. Une tâche est une action stratégique du monde réel — appeler, décider, chiffrer, formaliser — jamais une action d'interface. Exception : déposer un document clé dans la section Documents, quand son analyse fera avancer le dossier.",
+    "- Ne termine pas un échange stratégique en laissant le plan vide : si toutes les actions sont faites, la conversation sert à ouvrir la suite — le jalon suivant du PROGRAMME donne la direction, à toi de le traduire en 1 à 3 actions de la semaine.",
     "- Maximum 3 tâches Eden actives par semaine. Si le quota est atteint, aide d'abord à terminer ou reprogrammer l'existant plutôt que d'en ajouter.",
     "- Si la personne dit avoir fait, reporté ou être bloquée sur une tâche listée ci-dessus, utilise update_task avec son identifiant.",
     "- Avant de marquer faite une tâche à fort enjeu (priorité haute), assure-toi brièvement que c'est réellement bouclé : « Qu'est-ce qui te fait dire que c'est réglé ? » Un tuteur demande une preuve sur ce qui compte — sans tatillonner sur les petites tâches.",

@@ -94,6 +94,29 @@ export const dynamic = "force-dynamic";
 const MODEL = "gpt-5.5";
 const MAX_TOOL_ROUNDS = 4;
 
+/**
+ * Statuts affichés au dirigeant pendant qu'Eden travaille. Branchés sur les
+ * VRAIS appels d'outils — jamais du théâtre : le statut apparaît dès que le
+ * nom de l'outil est connu dans le stream, avant même la fin des arguments.
+ */
+const TOOL_STATUS: Record<string, string> = {
+  update_dossier: "Eden met à jour votre dossier…",
+  analyze_link: "Eden lit la page que vous avez fournie…",
+  create_tasks: "Eden prépare vos actions de la semaine…",
+  update_task: "Eden met à jour votre plan d'action…",
+  update_milestone: "Eden fait avancer votre programme…",
+  analyze_document: "Eden lit votre document…",
+  generate_document: "Eden rédige votre document…",
+  create_contact: "Eden note ce contact…",
+  update_contact: "Eden met à jour ce contact…",
+  create_opportunity: "Eden consigne cette opportunité…",
+  update_opportunity: "Eden met à jour cette opportunité…",
+  create_project: "Eden organise votre espace…",
+  update_project: "Eden organise votre espace…",
+  create_project_folder: "Eden organise votre espace…",
+  remember: "Eden retient ce que vous venez de dire…",
+};
+
 type ChatMessage = {
   role: "system" | "user" | "assistant" | "tool";
   content: string | null;
@@ -109,6 +132,7 @@ type ToolCallAccumulator = {
   id: string;
   name: string;
   args: string;
+  statusSent?: boolean;
 };
 
 function sseLine(obj: unknown): Uint8Array {
@@ -1175,6 +1199,14 @@ export async function POST(request: Request) {
                   if (tc.id) slot.id = tc.id;
                   if (tc.function?.name) slot.name = tc.function.name;
                   if (tc.function?.arguments) slot.args += tc.function.arguments;
+                  // Statut en direct dès que l'outil est identifié — couvre
+                  // aussi le temps de génération des arguments (long pour
+                  // generate_document).
+                  if (slot.name && !slot.statusSent) {
+                    slot.statusSent = true;
+                    const label = TOOL_STATUS[slot.name];
+                    if (label) emit({ type: "status", label });
+                  }
                 }
               }
               if (choice?.finish_reason) finishReason = choice.finish_reason;

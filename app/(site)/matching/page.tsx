@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AlliancePaths from "../components/alliance-paths";
 import AppShowcase from "../components/app-showcase";
+import MatchingConfidentiality from "../components/matching-confidentiality";
 import MatchingHero from "../components/matching-hero";
 import Reveal from "../components/reveal";
 import ScrollFillText from "../components/scroll-fill-text";
@@ -26,6 +27,17 @@ export default function MatchingPage() {
             text="Matching n’est pas un annuaire de plus. C’est la récompense du parcours — un cercle où chaque entreprise a été préparée, mesurée, puis invitée. Quand une rencontre s’y produit, les deux côtés sont prêts à conclure."
             accents={["récompense", "préparée", "mesurée", "invitée", "prêts"]}
           />
+          <p className="mx-auto mt-8 max-w-4xl text-center">
+            <Link
+              href="/psychologie"
+              className="group inline-flex items-center gap-2 text-sm font-semibold text-teal transition-colors hover:text-teal/80"
+            >
+              Comment la compatibilité se mesure — au-delà des chiffres
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </Link>
+          </p>
         </div>
       </section>
 
@@ -34,6 +46,9 @@ export default function MatchingPage() {
 
       {/* ── Trois façons de faire alliance ───────────────────── */}
       <AlliancePaths />
+
+      {/* ── Confidentialité 3 niveaux + NDA intégré ──────────── */}
+      <MatchingConfidentiality />
 
       {/* ── Appel à l’action ─────────────────────────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24">

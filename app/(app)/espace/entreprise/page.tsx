@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { listMilestones } from "@/lib/espace/program";
 import { compactProgression, listScoreHistory } from "@/lib/espace/score-history";
 import { rowToSubmission } from "@/lib/espace/supabase-store";
 import { listTasks } from "@/lib/espace/task-store";
@@ -33,10 +34,11 @@ export default async function EspaceEntreprisePage() {
     { data: convRow },
     scoreHistory,
     { data: docRows },
+    milestones,
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("full_name")
+      .select("full_name, company_name")
       .eq("id", user.id)
       .maybeSingle(),
     supabase
@@ -61,6 +63,7 @@ export default async function EspaceEntreprisePage() {
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(8),
+    listMilestones(supabase, user.id),
   ]);
 
   const submission = diagRow ? rowToSubmission(diagRow) : null;
@@ -112,12 +115,15 @@ export default async function EspaceEntreprisePage() {
   return (
     <Workspace
       displayName={displayName}
+      companyName={profileRow?.company_name ?? null}
+      email={user.email ?? ""}
       dateLabel={dateLabel}
       score={score}
       scoreSeries={compactProgression(scoreHistory)}
       hasDiagnostic={submission !== null}
       initialTasks={tasks}
       initialDocs={docs}
+      initialMilestones={milestones}
       initialConversationId={conversationId}
       initialMessages={initialMessages}
       needsCheckin={needsCheckin}

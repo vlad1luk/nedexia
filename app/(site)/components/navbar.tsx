@@ -10,6 +10,7 @@ import logo from "@/public/logo-nedexia.png";
 const links = [
   { href: "/eden", label: "Eden" },
   { href: "/matching", label: "Matching" },
+  { href: "/psychologie", label: "Psychologie" },
   { href: "/score", label: "Score" },
 ];
 

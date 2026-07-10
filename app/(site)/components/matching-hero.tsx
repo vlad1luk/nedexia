@@ -91,11 +91,18 @@ export default function MatchingHero() {
             className="absolute inset-x-0 top-0"
           >
             <div className="pointer-events-none absolute -inset-x-20 -top-12 h-80 rounded-full bg-teal/25 blur-[90px]" aria-hidden="true" />
-            <PhoneFrame
-              label="Écran d’accueil de l’application"
-              align="top"
-              className="relative ring-1 ring-white/15"
-            />
+            <PhoneFrame className="relative ring-1 ring-white/15">
+              <video
+                src="/cardEntrepriseVideo.MP4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                aria-label="La carte d’entreprise dans l’application"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            </PhoneFrame>
           </motion.div>
         </motion.div>
       </div>
