@@ -3,41 +3,38 @@
 import { animate, useInView } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
+/**
+ * Élément signature de /eden — instrument avant/après.
+ * Pas un slider SaaS pastel : deux feuillets de registre côte à côte,
+ * poignée rectangulaire laiton/encre, traits d'encre au lieu de pastilles
+ * colorées. Contenu inchangé.
+ */
+
 const rows = [
   {
     label: "États financiers",
     before: "8 mois de retard",
     after: "À jour, revus chaque mois",
-    beforeDot: "bg-coral/70",
-    afterDot: "bg-leaf",
   },
   {
     label: "Dépendance au dirigeant",
     before: "Tout passe par lui",
     after: "Deux relais formés",
-    beforeDot: "bg-coral/70",
-    afterDot: "bg-leaf",
   },
   {
     label: "Processus documentés",
     before: "2 sur 14",
     after: "12 sur 14",
-    beforeDot: "bg-sun/80",
-    afterDot: "bg-leaf",
   },
   {
     label: "Dossier de financement",
     before: "Inexistant",
     after: "Déposé à la BDC",
-    beforeDot: "bg-coral/70",
-    afterDot: "bg-teal",
   },
   {
     label: "Plan de relève",
     before: "Aucun",
     after: "Signé, échéancier 3 ans",
-    beforeDot: "bg-coral/70",
-    afterDot: "bg-teal",
   },
 ];
 
@@ -45,64 +42,62 @@ function Panel({ after }: { after: boolean }) {
   return (
     <div
       className={`flex h-full flex-col p-6 sm:p-8 ${
-        after ? "bg-white" : "bg-[#f2f2ed]"
+        after ? "bg-parchment" : "bg-parchment-deep"
       }`}
     >
-      <div className="flex items-center justify-between gap-4">
-        <p className={`text-sm ${after ? "text-foreground/50" : "text-foreground/40"}`}>
-          PME manufacturière · Montérégie
-        </p>
+      <div className="flex items-center justify-between gap-4 border-b border-ink/15 pb-3">
+        <p className="text-sm text-ink-soft">PME manufacturière · Montérégie</p>
         <p
-          className={`text-sm font-bold uppercase tracking-wider ${
-            after ? "text-teal" : "text-foreground/40"
+          className={`font-[family-name:var(--font-fraunces)] text-sm italic ${
+            after ? "text-moss" : "text-ink-soft"
           }`}
         >
           {after ? "Juillet" : "Janvier"}
         </p>
       </div>
 
-      <ul className="mt-6 space-y-1.5">
+      <ul className="mt-2 flex flex-col">
         {rows.map((row) => (
           <li
             key={row.label}
-            className="flex min-h-10 items-center justify-between gap-4"
+            className="flex min-h-11 items-center justify-between gap-4 border-b border-dotted border-ink/15 py-2.5 last:border-b-0"
           >
-            <span className={`text-sm ${after ? "text-foreground/60" : "text-foreground/45"}`}>
-              {row.label}
-            </span>
+            <span className="text-sm text-ink-soft">{row.label}</span>
             <span
               className={`flex items-center gap-2 text-right text-sm font-medium ${
-                after ? "text-navy" : "text-foreground/55"
+                after ? "text-ink" : "text-ink-soft"
               }`}
             >
               <span
-                className={`h-2 w-2 shrink-0 rounded-full ${after ? row.afterDot : row.beforeDot}`}
-                aria-hidden="true"
-              />
+                aria-hidden
+                className={`font-[family-name:var(--font-fraunces)] text-xs italic ${
+                  after ? "text-moss" : "text-rust"
+                }`}
+              >
+                {after ? "✓" : "—"}
+              </span>
               {after ? row.after : row.before}
             </span>
           </li>
         ))}
       </ul>
 
-      <div className="mt-auto pt-7">
+      <div className="mt-auto border-t border-ink/15 pt-6">
         <div className="flex items-baseline justify-between">
-          <span className={`text-sm font-medium ${after ? "text-foreground/60" : "text-foreground/45"}`}>
+          <span className="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-ink-soft">
             Score de préparation
           </span>
           <span
-            className={`text-3xl font-bold tabular-nums ${
-              after ? "text-navy" : "text-foreground/40"
+            className={`font-[family-name:var(--font-fraunces)] text-3xl font-medium tabular-nums ${
+              after ? "text-ink" : "text-ink-soft"
             }`}
           >
             {after ? 74 : 46}
           </span>
         </div>
-        <div className={`mt-2.5 h-2 overflow-hidden rounded-full ${after ? "bg-navy/10" : "bg-navy/10"}`}>
+        <div className="mt-2.5 h-1 overflow-hidden bg-ink/10">
           <div
-            className={`h-full rounded-full ${
-              after ? "w-[74%] bg-gradient-to-r from-leaf to-teal" : "w-[46%] bg-navy/25"
-            }`}
+            className={`h-full ${after ? "w-[74%] bg-moss" : "w-[46%] bg-ink/30"}`}
           />
         </div>
       </div>
@@ -117,7 +112,6 @@ export default function SixMonths() {
   const interactedRef = useRef(false);
   const inView = useInView(containerRef, { margin: "-120px", once: true });
 
-  // petit balayage d'introduction pour montrer que ça se glisse
   useEffect(() => {
     if (!inView || interactedRef.current) return;
     const controls = animate(50, 30, {
@@ -164,18 +158,16 @@ export default function SixMonths() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden py-20">
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <div className="absolute -top-24 -left-32 h-80 w-80 rounded-full bg-leaf/10 blur-3xl" />
-        <div className="absolute -bottom-24 -right-32 h-80 w-80 rounded-full bg-teal/10 blur-3xl" />
-      </div>
-
-      <div className="relative mx-auto max-w-3xl px-4 sm:px-6">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-navy sm:text-4xl">
+    <section className="bg-parchment py-20 sm:py-28">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
+        <div>
+          <span className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-brass">
+            Preuve de terrain
+          </span>
+          <h2 className="mt-2 text-balance font-[family-name:var(--font-fraunces)] text-3xl font-medium text-ink sm:text-4xl">
             Six mois d’écart
           </h2>
-          <p className="mt-4 text-lg text-foreground/70">
+          <p className="mt-4 max-w-xl text-lg leading-relaxed text-ink-soft">
             La même entreprise, avant et après Eden. Glissez pour comparer.
           </p>
         </div>
@@ -187,15 +179,13 @@ export default function SixMonths() {
             draggingRef.current = true;
             updateFromClientX(e.clientX);
           }}
-          className="relative mt-12 grid cursor-ew-resize select-none overflow-hidden rounded-3xl border border-navy/10 shadow-xl shadow-navy/5"
+          className="relative mt-12 grid cursor-ew-resize select-none overflow-hidden border border-ink/15 shadow-[3px_4px_0_0_rgba(27,36,48,0.08)]"
           style={{ touchAction: "pan-y" }}
         >
-          {/* Janvier (couche de base) */}
           <div className="[grid-area:1/1]">
             <Panel after={false} />
           </div>
 
-          {/* Juillet (couche révélée) */}
           <div
             className="[grid-area:1/1]"
             style={{ clipPath: `inset(0 0 0 ${pos}%)` }}
@@ -203,13 +193,12 @@ export default function SixMonths() {
             <Panel after={true} />
           </div>
 
-          {/* Poignée */}
           <div
             className="absolute inset-y-0 z-10 [grid-area:1/1]"
             style={{ left: `${pos}%` }}
             aria-hidden="true"
           >
-            <div className="absolute inset-y-0 -ml-px w-0.5 bg-navy/80" />
+            <div className="absolute inset-y-0 -ml-px w-px bg-ink" />
           </div>
           <button
             type="button"
@@ -227,16 +216,28 @@ export default function SixMonths() {
                 );
               }
             }}
-            className="absolute top-1/2 z-20 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize items-center justify-center rounded-full bg-navy text-white shadow-lg shadow-navy/30 outline-offset-4 transition-transform hover:scale-105 active:scale-95"
-            style={{ left: `${pos}%` }}
+            className="absolute top-1/2 z-20 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize items-center justify-center bg-ink text-parchment outline-offset-4 transition-colors hover:bg-[#232e3d]"
+            style={{
+              left: `${pos}%`,
+              clipPath:
+                "polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%)",
+            }}
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-5 w-5"
+            >
               <path d="M8 7l-5 5 5 5M16 7l5 5-5 5" />
             </svg>
           </button>
         </div>
 
-        <p className="mt-5 text-center text-xs text-foreground/40">
+        <p className="mt-5 text-center text-xs text-ink-soft/70">
           Parcours représentatif d’un accompagnement type de six mois.
         </p>
       </div>

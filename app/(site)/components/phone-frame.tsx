@@ -14,17 +14,12 @@ export function ScreenPlaceholder({
 }) {
   return (
     <div
-      className={`absolute inset-2.5 flex flex-col items-center gap-2.5 rounded-[1.85rem] border-2 border-dashed border-navy/15 bg-background px-4 text-center ${
+      className={`absolute inset-2.5 flex flex-col items-center gap-2.5 rounded-[1.85rem] border-2 border-dashed border-ink/15 bg-parchment px-4 text-center ${
         align === "top" ? "justify-start pt-16" : "justify-center"
       }`}
     >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-navy/25" aria-hidden="true">
-        <rect x="3" y="3" width="18" height="18" rx="3" />
-        <circle cx="9" cy="9" r="1.6" />
-        <path d="M21 15l-4.5-4.5L7 20" />
-      </svg>
-      <p className="text-sm font-semibold leading-snug text-navy/55">{label}</p>
-      <p className="text-xs text-foreground/40">Capture d’écran à venir</p>
+      <p className="text-sm font-medium leading-snug text-ink/55">{label}</p>
+      <p className="text-xs text-ink-soft/60">Capture à venir</p>
     </div>
   );
 }

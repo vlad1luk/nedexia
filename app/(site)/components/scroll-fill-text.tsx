@@ -8,15 +8,20 @@ function Word({
   progress,
   range,
   accent,
+  accentClassName,
 }: {
   children: string;
   progress: MotionValue<number>;
   range: [number, number];
   accent: boolean;
+  accentClassName: string;
 }) {
   const opacity = useTransform(progress, range, [0.12, 1]);
   return (
-    <motion.span style={{ opacity }} className={accent ? "text-teal" : undefined}>
+    <motion.span
+      style={{ opacity }}
+      className={accent ? accentClassName : undefined}
+    >
       {children}{" "}
     </motion.span>
   );
@@ -27,10 +32,13 @@ export default function ScrollFillText({
   text,
   accents = [],
   className = "",
+  accentClassName = "text-teal",
 }: {
   text: string;
   accents?: string[];
   className?: string;
+  /** Couleur des mots d’accent — défaut teal (psychologue) ; Matching passe rust. */
+  accentClassName?: string;
 }) {
   const ref = useRef<HTMLParagraphElement>(null);
   const { scrollYProgress } = useScroll({
@@ -50,6 +58,7 @@ export default function ScrollFillText({
           progress={scrollYProgress}
           range={[i / words.length, (i + 1) / words.length]}
           accent={accents.includes(word.replace(/[.,;:!?…—«»]/g, ""))}
+          accentClassName={accentClassName}
         >
           {word}
         </Word>

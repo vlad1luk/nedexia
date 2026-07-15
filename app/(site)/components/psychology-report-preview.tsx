@@ -1,18 +1,10 @@
-function CheckIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M4 12.5l5 5L20 6.5" />
-    </svg>
-  );
-}
-
-function DashIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className={className}>
-      <path d="M5 12h14" />
-    </svg>
-  );
-}
+/**
+ * Aperçu du rapport de compatibilité — élément signature de /psychologie.
+ *
+ * Spécimen de grand livre (parchemin / encre / laiton), pas une carte SaaS
+ * ombrée. Structure fidèle au rapport produit : score global, sous-scores,
+ * convergence / tension, recommandation.
+ */
 
 function ReportRow({
   label,
@@ -27,26 +19,26 @@ function ReportRow({
 }) {
   return (
     <li
-      className={`grid items-center gap-3 ${
-        mini ? "grid-cols-[1fr_60px_34px]" : "grid-cols-[1fr_100px_42px]"
-      } ${indent ? "pt-1" : ""}`}
+      className={`grid items-center gap-3 border-b border-dotted border-ink/15 py-2.5 last:border-b-0 ${
+        mini ? "grid-cols-[1fr_56px_2rem]" : "grid-cols-[1fr_5.5rem_2.25rem]"
+      } ${indent || mini ? "pl-3 sm:pl-4" : ""}`}
     >
       <span
         className={`text-[13px] leading-snug ${
-          mini ? "pl-4 text-foreground/50" : "font-semibold text-navy"
+          mini ? "text-ink-soft" : "font-medium text-ink"
         }`}
       >
         {label}
       </span>
-      <span className={`h-1.5 w-full overflow-hidden rounded-full bg-navy/8 ${mini ? "opacity-70" : ""}`}>
+      <span className="h-1 w-full overflow-hidden bg-ink/10">
         <span
-          className={`block h-full rounded-full ${mini ? "bg-teal/70" : "bg-gradient-to-r from-leaf to-teal"}`}
+          className={`block h-full ${mini ? "bg-moss-soft/70" : "bg-moss"}`}
           style={{ width: `${value}%` }}
         />
       </span>
       <span
-        className={`text-right font-semibold tabular-nums ${
-          mini ? "text-[11px] text-foreground/55" : "text-[13px] text-navy"
+        className={`text-right font-[family-name:var(--font-fraunces)] tabular-nums ${
+          mini ? "text-[11px] text-ink-soft" : "text-[13px] text-ink"
         }`}
       >
         {value}%
@@ -55,76 +47,91 @@ function ReportRow({
   );
 }
 
-/**
- * Aperçu du rapport de compatibilité — généré automatiquement au moment
- * d'un like mutuel. Reprend fidèlement la structure du rapport tel que
- * conçu : score global, sous-scores sectoriel/psychologique/stratégique,
- * zones de convergence et de tension, recommandation.
- */
 export default function PsychologyReportPreview() {
   return (
-    <div className="overflow-hidden rounded-[1.75rem] border border-navy/10 bg-white shadow-[0_30px_70px_-45px_rgba(35,35,96,0.35)]">
-      <div className="flex items-center justify-between border-b border-navy/8 bg-navy-deep px-5 py-3.5 sm:px-6">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/55">
+    <div className="border border-ink/15 bg-parchment text-ink shadow-[3px_4px_0_0_rgba(27,36,48,0.08)]">
+      <div className="flex items-center justify-between gap-3 border-b border-ink/15 bg-ink px-5 py-3.5 sm:px-6">
+        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-parchment/60">
           Rapport de compatibilité
         </p>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-leaf/20 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-leaf">
-          <CheckIcon className="h-2.5 w-2.5" />
+        <span className="font-[family-name:var(--font-fraunces)] text-xs italic text-brass">
           Recommandé
         </span>
       </div>
 
       <div className="px-5 py-5 sm:px-6 sm:py-6">
-        <div className="flex items-baseline justify-between border-b border-navy/8 pb-4">
-          <p className="text-xs uppercase tracking-wider text-foreground/45">Score global</p>
-          <p className="font-eden text-4xl font-semibold leading-none tracking-tight text-navy sm:text-[2.6rem]">
+        <div className="flex items-baseline justify-between border-b border-ink/15 pb-4">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-ink-soft">
+            Score global
+          </p>
+          <p className="font-[family-name:var(--font-fraunces)] text-4xl font-medium leading-none tracking-tight text-ink sm:text-[2.6rem]">
             82&nbsp;%
           </p>
         </div>
 
-        <ul className="mt-5 space-y-2.5">
-          <ReportRow label="Sectorielle &amp; financière" value={78} />
+        <ul className="mt-2">
+          <ReportRow label="Sectorielle & financière" value={78} />
           <ReportRow label="Psychologique globale" value={85} indent />
-          <ReportRow label="› Style post-acquisition" value={80} mini />
-          <ReportRow label="› Rapport à l'héritage" value={94} mini />
-          <ReportRow label="› Communication &amp; décision" value={82} mini />
+          <ReportRow label="Style post-acquisition" value={80} mini />
+          <ReportRow label="Rapport à l'héritage" value={94} mini />
+          <ReportRow label="Communication & décision" value={82} mini />
           <ReportRow label="Vision stratégique" value={83} />
         </ul>
 
-        <div className="mt-5 grid gap-2.5 border-t border-navy/8 pt-4 sm:grid-cols-2">
-          <div className="rounded-xl border border-leaf/25 bg-leaf/8 px-3.5 py-3">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-leaf-deep">
+        <div className="mt-5 grid gap-0 border border-ink/15 sm:grid-cols-2">
+          <div className="border-b border-ink/15 px-3.5 py-3 sm:border-b-0 sm:border-r">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-moss">
               Convergence
             </p>
-            <ul className="mt-1.5 space-y-1 text-[12px] leading-snug text-foreground/70">
+            <ul className="mt-2 space-y-1.5 text-[12px] leading-snug text-ink">
               <li className="flex items-start gap-1.5">
-                <CheckIcon className="mt-0.5 h-2.5 w-2.5 shrink-0 text-leaf-deep" />
+                <span
+                  aria-hidden
+                  className="font-[family-name:var(--font-fraunces)] text-xs italic text-moss"
+                >
+                  ✓
+                </span>
                 <span>Horizon 12–18 mois aligné</span>
               </li>
               <li className="flex items-start gap-1.5">
-                <CheckIcon className="mt-0.5 h-2.5 w-2.5 shrink-0 text-leaf-deep" />
+                <span
+                  aria-hidden
+                  className="font-[family-name:var(--font-fraunces)] text-xs italic text-moss"
+                >
+                  ✓
+                </span>
                 <span>Approche collaborative</span>
               </li>
             </ul>
           </div>
-          <div className="rounded-xl border border-navy/8 bg-background px-3.5 py-3">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/45">
+          <div className="bg-parchment-deep/50 px-3.5 py-3">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-ink-soft">
               Tension
             </p>
-            <ul className="mt-1.5 space-y-1 text-[12px] leading-snug text-foreground/70">
+            <ul className="mt-2 space-y-1.5 text-[12px] leading-snug text-ink-soft">
               <li className="flex items-start gap-1.5">
-                <DashIcon className="mt-0.5 h-2.5 w-2.5 shrink-0 text-foreground/35" />
+                <span
+                  aria-hidden
+                  className="font-[family-name:var(--font-fraunces)] text-xs italic text-rust/70"
+                >
+                  —
+                </span>
                 <span>Rythme de changement</span>
               </li>
               <li className="flex items-start gap-1.5">
-                <DashIcon className="mt-0.5 h-2.5 w-2.5 shrink-0 text-foreground/35" />
+                <span
+                  aria-hidden
+                  className="font-[family-name:var(--font-fraunces)] text-xs italic text-rust/70"
+                >
+                  —
+                </span>
                 <span>Autonomie post-closing</span>
               </li>
             </ul>
           </div>
         </div>
 
-        <p className="mt-4 border-t border-navy/8 pt-3 text-[10px] font-semibold uppercase tracking-wider text-foreground/45">
+        <p className="mt-4 border-t border-ink/15 pt-3 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-ink-soft">
           Recommandation · Connexion qualifiée
         </p>
       </div>
