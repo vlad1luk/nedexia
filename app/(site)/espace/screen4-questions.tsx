@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { motion } from "motion/react";
 
-import { ChoiceGrid, type ChoiceOption } from "./choice-grid";
 import { DocumentUpload } from "./document-upload";
 import { EdenBubble } from "./eden-bubble";
+import { QuestionFlow, type FlowQuestion } from "./question-flow";
 import { TunnelLayout } from "./tunnel-layout";
 import {
   ALL_BLOC_A,
   ALL_BLOC_B,
   ALL_BLOC_C,
-  type Question,
 } from "@/lib/espace/questions";
 import type { Scale } from "@/lib/espace/types";
 
@@ -31,168 +31,225 @@ type Props = {
   }) => void;
 };
 
-const BLOCS: Array<{
-  letter: "A" | "B" | "C";
-  title: string;
-  description: string;
-  questions: Question[];
-}> = [
-  {
-    letter: "A",
-    title: "Bloc A · Finances",
-    description:
-      "Trois questions sur la santé financière. Pas besoin de chiffres exacts ici.",
-    questions: ALL_BLOC_A,
-  },
-  {
-    letter: "B",
-    title: "Bloc B · Indépendance",
-    description:
-      "Trois questions sur l'autonomie de votre entreprise vis-à-vis des personnes clés.",
-    questions: ALL_BLOC_B,
-  },
-  {
-    letter: "C",
-    title: "Bloc C · Réputation",
-    description:
-      "Trois questions sur la confiance que votre entreprise inspire à l'extérieur.",
-    questions: ALL_BLOC_C,
-  },
+const BLOC_LABELS = {
+  A: "Finances",
+  B: "Indépendance",
+  C: "Réputation",
+} as const;
+
+const FLOW_QUESTIONS: FlowQuestion[] = [
+  ...ALL_BLOC_A.map((q) => ({ ...q, blocLabel: BLOC_LABELS.A })),
+  ...ALL_BLOC_B.map((q) => ({ ...q, blocLabel: BLOC_LABELS.B })),
+  ...ALL_BLOC_C.map((q) => ({ ...q, blocLabel: BLOC_LABELS.C })),
 ];
 
-function questionAsOptions(q: Question): ChoiceOption<string>[] {
-  return q.options.map((o) => ({
-    value: String(o.value),
-    label: o.label,
-  }));
+function blocOf(qId: string): "A" | "B" | "C" {
+  if (ALL_BLOC_A.some((q) => q.id === qId)) return "A";
+  if (ALL_BLOC_B.some((q) => q.id === qId)) return "B";
+  return "C";
 }
 
 export function Screen4Questions({ initial, onBack, onContinue }: Props) {
-  const [blocA, setBlocA] = useState<Record<string, Scale>>(initial?.blocA ?? {});
-  const [blocB, setBlocB] = useState<Record<string, Scale>>(initial?.blocB ?? {});
-  const [blocC, setBlocC] = useState<Record<string, Scale>>(initial?.blocC ?? {});
+  const [answers, setAnswers] = useState<Record<string, Scale>>({
+    ...(initial?.blocA ?? {}),
+    ...(initial?.blocB ?? {}),
+    ...(initial?.blocC ?? {}),
+  });
   const [file, setFile] = useState<{ name: string; size: number } | null>(
     initial?.fileName && typeof initial.fileSize === "number"
       ? { name: initial.fileName, size: initial.fileSize }
       : null
   );
 
-  const setAnswer =
-    (letter: "A" | "B" | "C") => (qId: string, scale: Scale) => {
-      const setter =
-        letter === "A" ? setBlocA : letter === "B" ? setBlocB : setBlocC;
-      setter((prev) => ({ ...prev, [qId]: scale }));
-    };
+  const allAnswered = FLOW_QUESTIONS.every((q) => answers[q.id] !== undefined);
+  const [phase, setPhase] = useState<"intro" | "flow" | "recap">(
+    allAnswered ? "recap" : "intro"
+  );
+  const [flowStart, setFlowStart] = useState<number | undefined>(undefined);
 
-  const all = [...ALL_BLOC_A, ...ALL_BLOC_B, ...ALL_BLOC_C];
-  const answeredCount =
-    Object.keys(blocA).length +
-    Object.keys(blocB).length +
-    Object.keys(blocC).length;
-  const allAnswered = answeredCount === all.length;
+  const grouped = useMemo(() => {
+    const out = { A: {} as Record<string, Scale>, B: {} as Record<string, Scale>, C: {} as Record<string, Scale> };
+    for (const [id, v] of Object.entries(answers)) out[blocOf(id)][id] = v;
+    return out;
+  }, [answers]);
+
+  const handleFinish = () =>
+    onContinue({
+      blocA: grouped.A,
+      blocB: grouped.B,
+      blocC: grouped.C,
+      file: file ?? undefined,
+    });
+
+  const editQuestion = (qId: string) => {
+    const idx = FLOW_QUESTIONS.findIndex((q) => q.id === qId);
+    if (idx === -1) return;
+    setFlowStart(idx);
+    setPhase("flow");
+  };
 
   return (
     <TunnelLayout screen={4} screenLabel="9 questions clés" onBack={onBack}>
-      <div className="flex flex-col gap-5">
-        <EdenBubble eyebrow="Eden · Étape 4/5">
-          Voici <strong className="font-medium text-navy">9 questions</strong>{" "}
-          réparties en 3 blocs. Pas de chiffres exacts — je veux situer votre
-          niveau de préparation. Vous pourrez ajouter vos états financiers en
-          option à la fin du bloc.
-        </EdenBubble>
+      {phase === "intro" ? (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col gap-6"
+        >
+          <EdenBubble eyebrow="Eden · Étape 4/5">
+            On entre dans le cœur du diagnostic :{" "}
+            <strong className="font-medium text-navy">9 questions</strong>, une
+            à la fois. Pas besoin de chiffres exacts — répondez avec ce que
+            vous savez aujourd&rsquo;hui, honnêtement. C&rsquo;est ce qui rend
+            la lecture utile.
+          </EdenBubble>
 
-        {BLOCS.map((bloc) => {
-          const current =
-            bloc.letter === "A" ? blocA : bloc.letter === "B" ? blocB : blocC;
-          return (
-            <section
-              key={bloc.letter}
-              className="flex flex-col gap-4 rounded-2xl border border-navy/10 bg-white/70 p-5"
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {(
+              [
+                ["A", "Finances", "Lisibilité des chiffres, dépendance client, trajectoire."],
+                ["B", "Indépendance", "Ce qui se passe quand vous n'êtes pas là."],
+                ["C", "Réputation", "Ce que le marché voit et dit de vous."],
+              ] as const
+            ).map(([letter, title, desc], i) => (
+              <motion.div
+                key={letter}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.08 * (i + 1) }}
+                className="flex flex-col gap-1.5 rounded-2xl border border-navy/10 bg-white p-4"
+              >
+                <span className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-teal">
+                  Bloc {letter} · {title}
+                </span>
+                <p className="text-sm leading-relaxed text-foreground/60">{desc}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => {
+                setFlowStart(undefined);
+                setPhase("flow");
+              }}
+              className="inline-flex items-center gap-2 rounded-full bg-navy px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-navy-deep"
             >
-              <header className="flex flex-col gap-1">
-                <h3 className="text-[0.78rem] font-semibold uppercase tracking-[0.18em] text-teal">
-                  {bloc.title}
-                </h3>
-                <p className="text-sm text-foreground/55">{bloc.description}</p>
-              </header>
-              <div className="flex flex-col gap-5">
-                {bloc.questions.map((q, idx) => (
-                  <div key={q.id} className="flex flex-col gap-2">
-                    <span className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-foreground/40">
-                      Question {idx + 1} · {q.title}
+              C&rsquo;est parti
+            </button>
+          </div>
+        </motion.div>
+      ) : phase === "flow" ? (
+        <QuestionFlow
+          questions={FLOW_QUESTIONS}
+          answers={answers}
+          onAnswer={(id, v) => setAnswers((prev) => ({ ...prev, [id]: v }))}
+          onFinished={() => setPhase("recap")}
+          onExitBack={() => setPhase(flowStart !== undefined ? "recap" : "intro")}
+          startIndex={flowStart}
+          editMode={flowStart !== undefined}
+        />
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col gap-5"
+        >
+          <EdenBubble tone="success" eyebrow="Eden">
+            Merci — j&rsquo;ai ce qu&rsquo;il me faut sur les fondations. Voici
+            vos réponses : vous pouvez en modifier une avant de continuer.
+          </EdenBubble>
+
+          {/* Récapitulatif des réponses, groupées par bloc */}
+          <div className="overflow-hidden rounded-2xl border border-navy/10 bg-white">
+            {(["A", "B", "C"] as const).map((letter) => {
+              const questions = FLOW_QUESTIONS.filter(
+                (q) => q.blocLabel === BLOC_LABELS[letter]
+              );
+              return (
+                <div key={letter} className="border-b border-navy/8 last:border-b-0">
+                  <div className="bg-background/70 px-4 py-2.5 sm:px-5">
+                    <span className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-teal">
+                      {BLOC_LABELS[letter]}
                     </span>
-                    <p className="text-[0.95rem] font-medium leading-snug text-navy">
-                      {q.prompt}
-                    </p>
-                    <ChoiceGrid
-                      options={questionAsOptions(q)}
-                      value={
-                        current[q.id] !== undefined
-                          ? String(current[q.id])
-                          : null
-                      }
-                      onSelect={(v) =>
-                        setAnswer(bloc.letter)(q.id, Number(v) as Scale)
-                      }
-                      columns={1}
-                    />
                   </div>
-                ))}
-              </div>
-            </section>
-          );
-        })}
-
-        <section className="overflow-hidden rounded-2xl border border-navy/10 bg-white">
-          <div className="border-b border-navy/10 bg-background/80 px-5 py-4">
-            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-teal">
-              Enrichissement
-            </p>
-            <p className="mt-1 text-sm text-foreground/75">
-              Document optionnel — conservé pour la suite du parcours, sans
-              analyse automatique à ce stade.
-            </p>
+                  <ul>
+                    {questions.map((q) => {
+                      const v = answers[q.id];
+                      const opt = q.options.find((o) => o.value === v);
+                      return (
+                        <li key={q.id} className="border-t border-navy/6 first:border-t-0">
+                          <button
+                            type="button"
+                            onClick={() => editQuestion(q.id)}
+                            className="group flex w-full items-center justify-between gap-4 px-4 py-3 text-left transition hover:bg-teal/4 sm:px-5"
+                          >
+                            <span className="flex min-w-0 flex-col gap-0.5">
+                              <span className="text-[0.7rem] font-medium uppercase tracking-[0.12em] text-foreground/40">
+                                {q.title}
+                              </span>
+                              <span className="truncate text-sm font-medium text-navy">
+                                {opt?.label ?? "—"}
+                              </span>
+                            </span>
+                            <span
+                              className={`flex shrink-0 items-center gap-2 text-xs ${
+                                v === 3
+                                  ? "text-leaf-deep"
+                                  : v === 2
+                                    ? "text-foreground/50"
+                                    : "text-foreground/50"
+                              }`}
+                            >
+                              <span
+                                aria-hidden
+                                className={`h-2 w-2 rounded-full ${
+                                  v === 3 ? "bg-leaf" : v === 2 ? "bg-teal/60" : "bg-navy/25"
+                                }`}
+                              />
+                              <span className="font-medium text-foreground/40 opacity-0 transition group-hover:opacity-100">
+                                Modifier
+                              </span>
+                            </span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              );
+            })}
           </div>
-          <div className="p-5">
-            <DocumentUpload value={file} onChange={setFile} />
-          </div>
-        </section>
 
-        <div className="flex flex-col gap-3 border-t border-navy/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-2">
-            <span className="text-xs font-medium text-navy">
-              {answeredCount} sur {all.length} questions complétées
-            </span>
-            <div
-              className="h-1 w-full max-w-xs overflow-hidden rounded-full bg-navy/10"
-              role="progressbar"
-              aria-valuenow={answeredCount}
-              aria-valuemin={0}
-              aria-valuemax={all.length}
-            >
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-leaf to-teal transition-all duration-300"
-                style={{ width: `${(answeredCount / all.length) * 100}%` }}
-              />
+          {/* Document optionnel */}
+          <section className="overflow-hidden rounded-2xl border border-navy/10 bg-white">
+            <div className="border-b border-navy/10 bg-background/70 px-5 py-3.5">
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-teal">
+                En option
+              </p>
+              <p className="mt-1 text-sm text-foreground/65">
+                Ajoutez un document (états financiers, plan d&rsquo;affaires) —
+                conservé pour la suite du parcours.
+              </p>
             </div>
+            <div className="p-5">
+              <DocumentUpload value={file} onChange={setFile} />
+            </div>
+          </section>
+
+          <div className="flex justify-end pt-1">
+            <button
+              type="button"
+              disabled={!FLOW_QUESTIONS.every((q) => answers[q.id] !== undefined)}
+              onClick={handleFinish}
+              className="inline-flex items-center gap-2 rounded-full bg-navy px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Continuer
+            </button>
           </div>
-          <button
-            type="button"
-            disabled={!allAnswered}
-            onClick={() =>
-              onContinue({
-                blocA,
-                blocB,
-                blocC,
-                file: file ?? undefined,
-              })
-            }
-            className="inline-flex shrink-0 items-center justify-center rounded-full bg-navy px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            Continuer
-          </button>
-        </div>
-      </div>
+        </motion.div>
+      )}
     </TunnelLayout>
   );
 }

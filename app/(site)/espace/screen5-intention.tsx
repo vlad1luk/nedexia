@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
-import { ChoiceGrid, type ChoiceOption } from "./choice-grid";
 import { EdenBubble } from "./eden-bubble";
+import { QuestionFlow, type FlowQuestion } from "./question-flow";
 import { TunnelLayout } from "./tunnel-layout";
 import { QUESTIONS_INTENTION } from "@/lib/espace/questions";
+import { INTENTION_LABELS } from "@/lib/espace/types";
 import type { Intention, Scale } from "@/lib/espace/types";
 
 type Props = {
@@ -36,58 +37,35 @@ export function Screen5Intention({
   onBack,
   onContinue,
 }: Props) {
-  const questions = QUESTIONS_INTENTION[intention];
+  const questions: FlowQuestion[] = QUESTIONS_INTENTION[intention].map((q) => ({
+    ...q,
+    blocLabel: INTENTION_LABELS[intention],
+  }));
   const [answers, setAnswers] = useState<Record<string, Scale>>(initial ?? {});
-
-  const setAnswer = (id: string, scale: Scale) =>
-    setAnswers((prev) => ({ ...prev, [id]: scale }));
-
-  const allAnswered = questions.every((q) => answers[q.id] !== undefined);
+  // Le flow avance après un court délai : on lit la version la plus fraîche
+  // des réponses via ce ref pour éviter une closure périmée à la fin.
+  const answersRef = useRef(answers);
+  answersRef.current = answers;
 
   return (
     <TunnelLayout screen={5} screenLabel="Votre situation" onBack={onBack}>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6">
         <EdenBubble eyebrow="Eden · Étape 5/5">
           {INTENTION_INTRO[intention]}
         </EdenBubble>
 
-        <section className="flex flex-col gap-5 rounded-2xl border border-navy/10 bg-white/70 p-5">
-          {questions.map((q, idx) => {
-            const opts: ChoiceOption<string>[] = q.options.map((o) => ({
-              value: String(o.value),
-              label: o.label,
-            }));
-            return (
-              <div key={q.id} className="flex flex-col gap-2">
-                <span className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-foreground/40">
-                  Question {idx + 1} · {q.title}
-                </span>
-                <p className="text-[0.95rem] font-medium leading-snug text-navy">
-                  {q.prompt}
-                </p>
-                <ChoiceGrid
-                  options={opts}
-                  value={
-                    answers[q.id] !== undefined ? String(answers[q.id]) : null
-                  }
-                  onSelect={(v) => setAnswer(q.id, Number(v) as Scale)}
-                  columns={1}
-                />
-              </div>
-            );
-          })}
-        </section>
-
-        <div className="flex justify-end pt-2">
-          <button
-            type="button"
-            disabled={!allAnswered}
-            onClick={() => onContinue(answers)}
-            className="inline-flex items-center gap-2 rounded-full bg-navy px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-navy-deep disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            Voir mon score
-          </button>
-        </div>
+        <QuestionFlow
+          questions={questions}
+          answers={answers}
+          onAnswer={(id, v) => setAnswers((prev) => ({ ...prev, [id]: v }))}
+          onFinished={() => {
+            const latest = answersRef.current;
+            if (questions.every((q) => latest[q.id] !== undefined)) {
+              onContinue(latest);
+            }
+          }}
+          onExitBack={onBack}
+        />
       </div>
     </TunnelLayout>
   );

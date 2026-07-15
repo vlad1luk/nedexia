@@ -17,6 +17,8 @@ export type Question = {
   /** Petit titre court (catégorie de la question) */
   title: string;
   prompt: string;
+  /** Pourquoi Eden pose la question — affiché sous le prompt pour donner du sens. */
+  help?: string;
   options: QuestionOption[];
   dimension: DimensionId;
 };
@@ -28,36 +30,42 @@ export const BLOC_A_FINANCES: Question[] = [
     id: "fin-visibilite",
     title: "Visibilité financière",
     prompt:
-      "Connaissez-vous votre marge nette des 3 dernières années ?",
+      "Si un partenaire sérieux vous demandait vos marges des 3 dernières années, pourriez-vous répondre ?",
+    help:
+      "Des chiffres lisibles sont le premier signal de confiance — c'est la première chose qu'un partenaire ou un acheteur regarde.",
     dimension: "finances",
     options: [
-      { label: "Oui, précisément", value: 3 },
-      { label: "Approximativement", value: 2 },
-      { label: "Non / pas à jour", value: 1 },
+      { label: "Oui, je les connais précisément", value: 3 },
+      { label: "En ordre de grandeur, sans les chiffres exacts", value: 2 },
+      { label: "Non — mes états ne sont pas à jour", value: 1 },
     ],
   },
   {
     id: "fin-dependance-client",
     title: "Dépendance client",
     prompt:
-      "Un seul client représente-t-il plus de 30 % de votre chiffre d'affaires ?",
+      "Quelle part de votre chiffre d'affaires dépend de votre plus gros client ?",
+    help:
+      "Au-delà de 30 %, la perte d'un seul client peut fragiliser toute l'entreprise — un point que tout acquéreur ou partenaire vérifie.",
     dimension: "finances",
     options: [
-      { label: "Non, clientèle diversifiée", value: 3 },
-      { label: "Oui, un client important", value: 2 },
-      { label: "Oui, un ou deux clients font l'essentiel", value: 1 },
+      { label: "Moins de 30 % — clientèle diversifiée", value: 3 },
+      { label: "Entre 30 et 50 % — un client pèse lourd", value: 2 },
+      { label: "Plus de 50 % — un ou deux clients font l'essentiel", value: 1 },
     ],
   },
   {
     id: "fin-tendance",
-    title: "Tendance",
+    title: "Trajectoire",
     prompt:
-      "Sur les 2 dernières années, votre chiffre d'affaires est plutôt…",
+      "Sur les 2 dernières années, comment évolue votre chiffre d'affaires ?",
+    help:
+      "La trajectoire compte plus que le montant : elle dit si votre modèle gagne ou perd du terrain.",
     dimension: "finances",
     options: [
-      { label: "En croissance", value: 3 },
-      { label: "Stable", value: 2 },
-      { label: "En baisse ou irrégulier", value: 1 },
+      { label: "En croissance régulière", value: 3 },
+      { label: "Stable, sans grande variation", value: 2 },
+      { label: "En baisse ou en dents de scie", value: 1 },
     ],
   },
 ];
@@ -67,38 +75,44 @@ export const BLOC_A_FINANCES: Question[] = [
 export const BLOC_B_INDEPENDANCE: Question[] = [
   {
     id: "ind-fondateur",
-    title: "Dépendance fondateur",
+    title: "Le test du mois d'absence",
     prompt:
-      "Si vous deviez vous absenter 1 mois sans contact, votre entreprise tournerait…",
+      "Imaginez : vous partez 1 mois, injoignable. Que se passe-t-il dans votre entreprise ?",
+    help:
+      "C'est le test classique de la valeur transmissible : une entreprise qui dépend de son fondateur vaut moins qu'une entreprise qui tourne seule.",
     dimension: "independance",
     options: [
-      { label: "Sans problème, l'équipe sait quoi faire", value: 3 },
-      { label: "Avec quelques décisions à reporter", value: 2 },
-      { label: "Difficilement — beaucoup passe par moi", value: 1 },
+      { label: "Elle tourne — l'équipe sait quoi faire sans moi", value: 3 },
+      { label: "Elle tient, mais des décisions s'accumulent", value: 2 },
+      { label: "Elle cale — presque tout passe par moi", value: 1 },
     ],
   },
   {
     id: "ind-equipe",
-    title: "Autonomie de l'équipe",
+    title: "Personnes clés",
     prompt:
-      "Les fonctions critiques (vente, opérations, finances) sont assurées par…",
+      "Qui tient les fonctions critiques — ventes, opérations, finances ?",
+    help:
+      "Chaque fonction portée par une seule personne (surtout vous) est un point de fragilité qu'un partenaire va relever.",
     dimension: "independance",
     options: [
-      { label: "Plusieurs personnes, chacune avec un suppléant", value: 3 },
-      { label: "Une personne par fonction, sans suppléant", value: 2 },
-      { label: "Moi-même sur l'essentiel", value: 1 },
+      { label: "Des responsables identifiés, avec des relais en cas d'absence", value: 3 },
+      { label: "Une personne par fonction, sans relais", value: 2 },
+      { label: "Moi-même sur l'essentiel des fonctions", value: 1 },
     ],
   },
   {
     id: "ind-fournisseur",
-    title: "Dépendance fournisseur",
+    title: "Chaîne d'approvisionnement",
     prompt:
-      "Si votre principal fournisseur disparaissait demain, vous pourriez…",
+      "Si votre fournisseur ou sous-traitant principal disparaissait demain, que feriez-vous ?",
+    help:
+      "La dépendance ne vient pas que des clients : un maillon unique en amont peut bloquer toute la livraison.",
     dimension: "independance",
     options: [
-      { label: "Le remplacer en quelques semaines sans casse", value: 3 },
-      { label: "Vous adapter, mais avec un impact", value: 2 },
-      { label: "Avoir un sérieux problème opérationnel", value: 1 },
+      { label: "Je le remplace en quelques semaines, sans casse", value: 3 },
+      { label: "Je m'adapte, avec un impact réel mais gérable", value: 2 },
+      { label: "J'aurais un sérieux problème opérationnel", value: 1 },
     ],
   },
 ];
@@ -108,38 +122,44 @@ export const BLOC_B_INDEPENDANCE: Question[] = [
 export const BLOC_C_REPUTATION: Question[] = [
   {
     id: "rep-avis",
-    title: "Avis publics",
+    title: "Preuves publiques",
     prompt:
-      "Avez-vous des avis clients publics (Google, témoignages, études de cas) ?",
+      "Un prospect qui vous cherche sur Google avant de vous rappeler — que trouve-t-il ?",
+    help:
+      "Aujourd'hui, la première vérification se fait en ligne, avant même le premier appel. Ce qu'on y trouve décide souvent de la suite.",
     dimension: "reputation",
     options: [
-      { label: "Oui, suffisamment pour rassurer un prospect", value: 3 },
-      { label: "Quelques-uns, à structurer", value: 2 },
-      { label: "Très peu / aucun", value: 1 },
+      { label: "Des avis et témoignages qui rassurent", value: 3 },
+      { label: "Quelques traces, mais rien de structuré", value: 2 },
+      { label: "Presque rien", value: 1 },
     ],
   },
   {
     id: "rep-references",
-    title: "Clients de référence",
+    title: "Clients ambassadeurs",
     prompt:
-      "Pouvez-vous citer 3 clients prestigieux ou représentatifs prêts à recommander votre entreprise ?",
+      "Si je vous demandais 3 clients prêts à recommander votre entreprise au téléphone, vous pourriez me les nommer ?",
+    help:
+      "Les références vérifiables sont la monnaie de confiance du B2B — elles pèsent plus qu'une plaquette commerciale.",
     dimension: "reputation",
     options: [
-      { label: "Oui, sans hésiter", value: 3 },
+      { label: "Oui, sans hésiter — j'ai les noms", value: 3 },
       { label: "1 ou 2 sûrs, les autres à confirmer", value: 2 },
       { label: "Non, pas vraiment", value: 1 },
     ],
   },
   {
     id: "rep-presence",
-    title: "Présence professionnelle",
+    title: "Vitrine professionnelle",
     prompt:
-      "Votre entreprise a-t-elle une présence professionnelle visible (site, LinkedIn, médias) ?",
+      "Votre présence en ligne (site, LinkedIn, médias) reflète-t-elle le vrai niveau de votre entreprise ?",
+    help:
+      "Une vitrine datée fait douter même les meilleurs dossiers. L'inverse est aussi vrai : une présence soignée crédibilise avant la première rencontre.",
     dimension: "reputation",
     options: [
-      { label: "Oui, soignée et à jour", value: 3 },
-      { label: "Présente mais à actualiser", value: 2 },
-      { label: "Quasi-absente", value: 1 },
+      { label: "Oui — soignée, à jour, fidèle à ce qu'on fait", value: 3 },
+      { label: "Présente, mais elle mériterait une mise à jour", value: 2 },
+      { label: "Quasi absente ou très datée", value: 1 },
     ],
   },
 ];
@@ -154,25 +174,29 @@ export const QUESTIONS_INTENTION: Record<Intention, Question[]> = {
   commerce: [
     {
       id: "int-commerce-message",
-      title: "Message commercial",
+      title: "Le test des 30 secondes",
       prompt:
-        "Vos prospects comprennent-ils en moins de 30 secondes ce que vous vendez et à qui ?",
+        "Un prospect découvre votre entreprise. En 30 secondes, comprend-il ce que vous vendez, à qui, et pourquoi vous ?",
+      help:
+        "En B2B, la clarté du message fait gagner ou perdre le premier rendez-vous — avant même le prix.",
       dimension: "clarte",
       options: [
-        { label: "Oui, c'est limpide", value: 3 },
-        { label: "Globalement, mais à clarifier", value: 2 },
-        { label: "Non, c'est souvent confus", value: 1 },
+        { label: "Oui, c'est limpide dès la première phrase", value: 3 },
+        { label: "Globalement, mais il faut souvent réexpliquer", value: 2 },
+        { label: "Non — c'est souvent confus pour eux", value: 1 },
       ],
     },
     {
       id: "int-commerce-cible",
-      title: "Ciblage",
+      title: "Client idéal",
       prompt:
-        "Avez-vous identifié précisément votre type de client idéal ?",
+        "Pourriez-vous décrire votre client idéal en 3 critères concrets (secteur, taille, situation) ?",
+      help:
+        "Un ciblage précis multiplie l'efficacité commerciale : on ne prospecte bien que ce qu'on a défini.",
       dimension: "clarte",
       options: [
-        { label: "Oui, profil clair avec critères", value: 3 },
-        { label: "Globalement, intuitivement", value: 2 },
+        { label: "Oui — profil écrit, avec des critères", value: 3 },
+        { label: "Intuitivement, sans l'avoir formalisé", value: 2 },
         { label: "Pas encore", value: 1 },
       ],
     },
@@ -180,26 +204,30 @@ export const QUESTIONS_INTENTION: Record<Intention, Question[]> = {
   alliance: [
     {
       id: "int-alliance-quoi",
-      title: "Recherche partenaire",
+      title: "Ce que vous cherchez",
       prompt:
-        "Savez-vous précisément ce que vous cherchez chez un partenaire stratégique ?",
+        "Chez un partenaire stratégique, savez-vous précisément ce que vous cherchez — et ce que vous refusez ?",
+      help:
+        "Les alliances qui durent partent de complémentarités nommées, pas d'affinités vagues.",
       dimension: "clarte",
       options: [
-        { label: "Oui, complémentarités définies", value: 3 },
-        { label: "Une idée générale", value: 2 },
+        { label: "Oui — complémentarités et limites définies", value: 3 },
+        { label: "Une idée générale, à préciser", value: 2 },
         { label: "Pas encore", value: 1 },
       ],
     },
     {
       id: "int-alliance-offrir",
-      title: "Apport à un partenaire",
+      title: "Ce que vous apportez",
       prompt:
-        "Pouvez-vous formuler en une phrase ce que vous apportez à un partenaire ?",
+        "Et dans l'autre sens : pouvez-vous formuler en une phrase ce qu'un partenaire gagne à s'allier avec vous ?",
+      help:
+        "Un partenaire évalue d'abord ce que vous lui apportez — savoir le dire simplement change la conversation.",
       dimension: "clarte",
       options: [
         { label: "Oui, sans hésiter", value: 3 },
-        { label: "Avec quelques mots de plus", value: 2 },
-        { label: "Non, à travailler", value: 1 },
+        { label: "J'y arrive, avec quelques détours", value: 2 },
+        { label: "Non, c'est à travailler", value: 1 },
       ],
     },
   ],
@@ -208,62 +236,72 @@ export const QUESTIONS_INTENTION: Record<Intention, Question[]> = {
       id: "int-cession-horizon",
       title: "Horizon de cession",
       prompt:
-        "À quelle échéance envisagez-vous la cession ?",
+        "À quelle échéance envisagez-vous de céder ou transmettre ?",
+      help:
+        "Une cession bien préparée se joue 24 à 36 mois à l'avance — l'horizon détermine la marge de manœuvre.",
       dimension: "structure",
       options: [
-        { label: "3 à 5 ans — j'ai le temps de préparer", value: 3 },
+        { label: "3 à 5 ans — j'ai le temps de bien préparer", value: 3 },
         { label: "1 à 2 ans — la fenêtre se rapproche", value: 2 },
-        { label: "Moins d'un an — urgent", value: 1 },
+        { label: "Moins d'un an — c'est urgent", value: 1 },
       ],
     },
     {
       id: "int-cession-prets",
-      title: "Documents disponibles",
+      title: "Salle des documents",
       prompt:
-        "Vos documents clés (états financiers, contrats, organigramme) sont-ils prêts à être présentés ?",
+        "Si un acheteur sérieux se manifestait demain, vos documents clés (états financiers, contrats, organigramme) seraient-ils prêts à montrer ?",
+      help:
+        "Un dossier prêt accélère la transaction et protège la valorisation — les délais font fuir les acheteurs.",
       dimension: "structure",
       options: [
-        { label: "Oui, organisés et à jour", value: 3 },
-        { label: "Partiellement", value: 2 },
-        { label: "Non, à reconstituer", value: 1 },
+        { label: "Oui — organisés et à jour", value: 3 },
+        { label: "En partie — il faudrait quelques semaines", value: 2 },
+        { label: "Non — tout serait à reconstituer", value: 1 },
       ],
     },
   ],
   acquisition: [
     {
       id: "int-acq-profil",
-      title: "Profil cible",
+      title: "Cible d'acquisition",
       prompt:
-        "Avez-vous défini précisément le profil d'entreprise que vous cherchez à acquérir ?",
+        "L'entreprise que vous voulez acquérir : sauriez-vous la décrire en critères précis (secteur, taille, géographie) ?",
+      help:
+        "Des critères écrits évitent des mois perdus sur de fausses pistes — et crédibilisent votre démarche auprès des cédants.",
       dimension: "clarte",
       options: [
-        { label: "Oui, critères précis", value: 3 },
-        { label: "Idée générale du secteur", value: 2 },
+        { label: "Oui — critères écrits et précis", value: 3 },
+        { label: "Une idée du secteur, sans plus", value: 2 },
         { label: "Pas encore", value: 1 },
       ],
     },
     {
       id: "int-acq-capacite",
-      title: "Capacité financière",
+      title: "Capacité de financement",
       prompt:
-        "Avez-vous une vision claire de votre capacité de financement pour une acquisition ?",
+        "Savez-vous combien vous pouvez investir, et avec quels leviers (fonds propres, dette, partenaires) ?",
+      help:
+        "Un cédant sérieux demande très vite des preuves de capacité financière — mieux vaut les avoir avant de chercher.",
       dimension: "finances",
       options: [
-        { label: "Oui, montants et leviers identifiés", value: 3 },
+        { label: "Oui — montants et leviers identifiés", value: 3 },
         { label: "Une enveloppe approximative", value: 2 },
-        { label: "Non, à explorer", value: 1 },
+        { label: "Non, c'est à explorer", value: 1 },
       ],
     },
   ],
   structuration: [
     {
       id: "int-struct-prio",
-      title: "Priorités",
+      title: "Cap des 12 mois",
       prompt:
-        "Avez-vous identifié vos 3 priorités stratégiques pour les 12 prochains mois ?",
+        "Vos 3 priorités stratégiques pour les 12 prochains mois : existent-elles quelque part ailleurs que dans votre tête ?",
+      help:
+        "Des priorités écrites et partagées alignent l'équipe — c'est la différence entre structurer et improviser.",
       dimension: "clarte",
       options: [
-        { label: "Oui, écrites et partagées", value: 3 },
+        { label: "Oui — écrites et partagées avec l'équipe", value: 3 },
         { label: "Dans ma tête, pas formalisées", value: 2 },
         { label: "Non, à clarifier", value: 1 },
       ],
@@ -274,12 +312,14 @@ export const QUESTIONS_INTENTION: Record<Intention, Question[]> = {
       id: "int-expl-frein",
       title: "Frein principal",
       prompt:
-        "Qu'est-ce qui freine le plus votre entreprise aujourd'hui ?",
+        "Aujourd'hui, qu'est-ce qui freine le plus votre entreprise ?",
+      help:
+        "Nommer le frein principal est le point de départ : on ne peut pas travailler ce qu'on n'a pas identifié.",
       dimension: "clarte",
       options: [
-        { label: "Rien de critique, je veux juste progresser", value: 3 },
-        { label: "Un point précis que je connais", value: 2 },
-        { label: "Plusieurs points sans priorité claire", value: 1 },
+        { label: "Rien de critique — je veux juste progresser", value: 3 },
+        { label: "Un point précis, que je connais", value: 2 },
+        { label: "Plusieurs points, sans priorité claire", value: 1 },
       ],
     },
   ],

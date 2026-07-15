@@ -129,3 +129,22 @@ body {
     animation: none;
   }
 }
+
+/* ═══════════════ /financement — système « carnet de terrain » ═══════════════
+   Palette et matières propres à cette page (tokens additifs, n'affectent
+   aucune autre route) : encre, parchemin, mousse, rouille, laiton — le
+   registre d'un carnet de terrain naturaliste croisé avec un grand livre
+   comptable. Voir app/(site)/financement/ pour l'usage. */
+
+@theme inline {
+  --color-ink: #1b2430;
+  --color-ink-soft: #5c6572;
+  --color-parchment: #f1e8d6;
+  --color-parchment-deep: #e7dabd;
+  --color-moss: #435e45;
+  --color-moss-soft: #6e8a6c;
+  --color-rust: #b54e2c;
+  --color-rust-deep: #93401f;
+  --color-brass: #a9863e;
+  --font-ledger: var(--font-fraunces);
+}
