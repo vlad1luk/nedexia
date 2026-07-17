@@ -17,6 +17,8 @@ type Props = {
   docs: DocItem[];
   setDocs: Dispatch<SetStateAction<DocItem[]>>;
   onScore: (score: number, tier: Tier) => void;
+  /** Nombre maximal de documents listés (6 par défaut, vue compacte). */
+  limit?: number;
 };
 
 const ACCEPT = ".pdf,.txt,.csv,.md";
@@ -33,20 +35,20 @@ function statusChip(doc: DocItem): { label: string; cls: string } {
     case "done":
       return {
         label: doc.docType ? `Analysé · ${doc.docType}` : "Analysé par Eden",
-        cls: "bg-leaf/15 text-leaf-deep",
+        cls: "bg-moss/15 text-moss",
       };
     case "processing":
-      return { label: "Eden lit le document…", cls: "bg-teal/10 text-teal" };
+      return { label: "Eden lit le document…", cls: "bg-brass/15 text-brass" };
     case "failed":
-      return { label: "Analyse impossible", cls: "bg-coral/10 text-coral" };
+      return { label: "Analyse impossible", cls: "bg-rust/10 text-rust" };
     case "unsupported":
       if (doc.name.endsWith(".md")) {
         // Livrable rédigé par Eden (généré en séance, stocké en Markdown).
-        return { label: "Rédigé par Eden", cls: "bg-teal/10 text-teal" };
+        return { label: "Rédigé par Eden", cls: "bg-brass/15 text-brass" };
       }
-      return { label: "Format non lu (PDF conseillé)", cls: "bg-navy/8 text-foreground/55" };
+      return { label: "Format non lu (PDF conseillé)", cls: "bg-ink/8 text-ink-soft" };
     default:
-      return { label: "En attente d'analyse", cls: "bg-navy/8 text-foreground/55" };
+      return { label: "En attente d'analyse", cls: "bg-ink/8 text-ink-soft" };
   }
 }
 
@@ -55,7 +57,7 @@ function statusChip(doc: DocItem): { label: string; cls: string } {
  * dans la foulée : le dossier s'enrichit et le score peut monter. Pas de
  * dossiers ni d'arborescence : le strict utile.
  */
-export function DocumentsDock({ docs, setDocs, onScore }: Props) {
+export function DocumentsDock({ docs, setDocs, onScore, limit = 6 }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -177,10 +179,10 @@ export function DocumentsDock({ docs, setDocs, onScore }: Props) {
           setDragOver(false);
           handleFile(e.dataTransfer.files?.[0]);
         }}
-        className={`group flex w-full items-center gap-3 rounded-2xl border border-dashed px-4 py-3.5 text-left transition-colors disabled:cursor-wait ${
+        className={`group flex w-full items-center gap-3 border border-dashed px-4 py-3.5 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rust disabled:cursor-wait ${
           dragOver
-            ? "border-teal bg-teal/10"
-            : "border-navy/20 bg-white/60 hover:border-teal/50 hover:bg-teal/5"
+            ? "border-moss bg-moss/10"
+            : "border-ink/25 bg-parchment hover:border-moss/60 hover:bg-moss/5"
         }`}
       >
         <input
@@ -193,7 +195,7 @@ export function DocumentsDock({ docs, setDocs, onScore }: Props) {
             e.target.value = "";
           }}
         />
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-navy/10 bg-white text-teal shadow-sm">
+        <span className="grid h-9 w-9 shrink-0 place-items-center border border-ink/15 bg-parchment text-moss">
           {busy ? (
             <svg viewBox="0 0 24 24" className="h-4 w-4 animate-spin" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
               <path d="M12 3a9 9 0 1 0 9 9" />
@@ -206,23 +208,23 @@ export function DocumentsDock({ docs, setDocs, onScore }: Props) {
           )}
         </span>
         <span className="min-w-0">
-          <span className="block text-sm font-medium text-navy">
+          <span className="block text-sm font-medium text-ink">
             {busy ? "Eden lit votre document…" : "Déposer un document"}
           </span>
-          <span className="block text-xs text-foreground/50">
+          <span className="block text-xs text-ink-soft">
             États financiers, plan d&rsquo;affaires… PDF de préférence — Eden
             l&rsquo;analyse et enrichit votre dossier.
           </span>
         </span>
       </button>
 
-      {error && <p className="px-1 text-xs text-coral">{error}</p>}
+      {error && <p className="px-1 text-xs text-rust">{error}</p>}
 
       {/* Documents déposés */}
       {docs.length > 0 && (
         <ul className="flex flex-col gap-2">
           <AnimatePresence initial={false}>
-            {docs.slice(0, 6).map((doc) => {
+            {docs.slice(0, limit).map((doc) => {
               const chip = statusChip(doc);
               return (
                 <motion.li
@@ -230,24 +232,24 @@ export function DocumentsDock({ docs, setDocs, onScore }: Props) {
                   layout
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-3 rounded-2xl border border-navy/8 bg-white px-4 py-3"
+                  className="flex items-center gap-3 border border-ink/12 bg-parchment px-4 py-3"
                 >
-                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-navy/5 text-navy/60">
+                  <span className="grid h-8 w-8 shrink-0 place-items-center border border-ink/12 bg-parchment text-ink-soft">
                     <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                       <path d="M14 2v6h6" />
                     </svg>
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium text-navy">
+                    <span className="block truncate text-sm font-medium text-ink">
                       {doc.name}
                     </span>
-                    <span className="text-xs text-foreground/40">
+                    <span className="font-mono text-xs tabular-nums text-ink-soft/70">
                       {formatSize(doc.size)}
                     </span>
                   </span>
                   <span
-                    className={`shrink-0 rounded-full px-2.5 py-1 text-[0.68rem] font-semibold ${chip.cls}`}
+                    className={`shrink-0 px-2.5 py-1 text-[0.68rem] font-semibold ${chip.cls}`}
                   >
                     {chip.label}
                   </span>

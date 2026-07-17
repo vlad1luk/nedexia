@@ -88,22 +88,22 @@ function IdleCard() {
       exit={{ opacity: 0 }}
       className="flex flex-col items-center gap-5 py-6 text-center"
     >
-      <span className="font-[family-name:var(--font-fraunces)] text-sm italic text-brass">
-        Le registre
+      <span className="text-[0.68rem] font-bold uppercase tracking-[0.2em] text-rust">
+        Diagnostic financement
       </span>
-      <h2 className="font-[family-name:var(--font-fraunces)] text-2xl font-medium text-ink">
-        Votre diagnostic se déroule ici
+      <h2 className="font-[family-name:var(--font-fraunces)] text-2xl font-medium text-ink sm:text-3xl">
+        Découvrez ce qui est finançable pour votre entreprise
       </h2>
       <p className="max-w-md text-sm leading-relaxed text-ink-soft">
         Six questions, une à la fois. Aucune donnée sensible, aucun compte —
-        votre verdict s&rsquo;affiche directement sur cette page.
+        votre verdict chiffré s&rsquo;affiche directement.
       </p>
       <button
         type="button"
         onClick={startDiagnostic}
         className="mt-2 border border-ink/25 px-6 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-ink transition-colors hover:border-rust hover:text-rust"
       >
-        Lancer la première question
+        Répondre aux premières questions
       </button>
     </motion.div>
   );

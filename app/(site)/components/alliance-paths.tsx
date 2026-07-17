@@ -39,7 +39,7 @@ const paths: Path[] = [
     title: "Investir",
     teaser: "Des PME préparées, mesurées au Score",
     description:
-      "Cherchez un bon pari : des PME dont la maturité se mesure au Score — pas seulement au discours. Vous investissez sur des bases documentées et vérifiables.",
+      "Cherchez un bon pari : des PME dont la préparation se mesure au Score — pas seulement au discours. Vous investissez sur des bases documentées et vérifiables.",
     examples: ["Participation minoritaire", "Financement de croissance", "Rachat partiel"],
   },
 ];

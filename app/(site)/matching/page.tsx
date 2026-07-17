@@ -62,7 +62,115 @@ export default function MatchingPage() {
 
       <AppShowcase />
       <AlliancePaths />
+
+      {/* ── Les cinq variables — page d'encre ────────────────── */}
+      <section className="bg-ink py-20 text-parchment sm:py-28">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6">
+          <Reveal>
+            <span className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-brass">
+              La mécanique
+            </span>
+            <h2 className="mt-2 max-w-2xl text-balance font-[family-name:var(--font-fraunces)] text-3xl font-medium sm:text-4xl">
+              La compatibilité se mesure sur cinq variables
+            </h2>
+            <p className="mt-4 max-w-2xl text-lg leading-relaxed text-parchment/70">
+              Chaque mise en relation est calculée avant d’être proposée. Pas
+              de flux à faire défiler : cinq lectures croisées, et seulement les
+              rencontres qui tiennent la route.
+            </p>
+          </Reveal>
+
+          <div className="mt-12 flex flex-col border-t border-parchment/15">
+            {[
+              {
+                titre: "Préparation",
+                texte:
+                  "Le Score des deux entreprises. Personne n’entre avant d’être prêt — c’est ce qui rend chaque rencontre utile.",
+              },
+              {
+                titre: "Intention",
+                texte:
+                  "S’allier, céder, acquérir, investir. Les intentions doivent se répondre, pas seulement coexister.",
+              },
+              {
+                titre: "Complémentarité",
+                texte:
+                  "Secteurs, forces, territoires : ce que l’un apporte que l’autre n’a pas.",
+              },
+              {
+                titre: "Capacité financière",
+                texte:
+                  "Taille, moyens, valeur documentée — pour que la discussion soit réaliste des deux côtés.",
+              },
+              {
+                titre: "Compatibilité humaine",
+                texte:
+                  "Personnalité, style de décision, rapport à l’héritage — la couche psychologique du profil.",
+              },
+            ].map((variable, i) => (
+              <Reveal key={variable.titre} delay={0.05 * i}>
+                <article className="flex flex-col gap-2 border-b border-parchment/15 py-5 sm:flex-row sm:items-baseline sm:gap-6">
+                  <span className="shrink-0 font-[family-name:var(--font-fraunces)] text-lg italic text-brass sm:w-10">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="shrink-0 text-base font-semibold text-parchment sm:w-56">
+                    {variable.titre}
+                  </h3>
+                  <span className="hidden flex-1 border-b border-dotted border-parchment/25 sm:block" />
+                  <p className="text-sm leading-relaxed text-parchment/65 sm:max-w-sm sm:text-right">
+                    {variable.texte}
+                  </p>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+
+          <Reveal delay={0.3}>
+            <p className="mt-8">
+              <Link
+                href="/psychologie"
+                className="group inline-flex items-center gap-2 text-sm font-medium tracking-wide text-parchment/80 transition-colors hover:text-brass"
+              >
+                La cinquième variable a sa propre page — la psychologie
+                d&rsquo;entreprise
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </Link>
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
       <MatchingConfidentiality />
+
+      {/* ── Le cercle — teaser communauté ────────────────────── */}
+      <section className="bg-parchment py-20 sm:py-28">
+        <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
+          <Reveal>
+            <span className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-brass">
+              À venir
+            </span>
+            <h2 className="mt-2 text-balance font-[family-name:var(--font-fraunces)] text-3xl font-medium text-ink sm:text-4xl">
+              Un cercle, pas seulement une application.
+            </h2>
+            <p className="mx-auto mt-5 max-w-xl text-balance text-lg leading-relaxed text-ink-soft">
+              Matching réunit des dirigeants qui ont fait le même travail de
+              préparation. Les premières entreprises du jardin formeront le
+              premier cercle — des gens qui se reconnaissent au travail
+              accompli, pas à la carte d&rsquo;affaires.
+            </p>
+          </Reveal>
+        </div>
+      </section>
 
       {/* CTA — page d'encre */}
       <section className="bg-ink py-20 text-parchment sm:py-28">

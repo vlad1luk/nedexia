@@ -18,9 +18,9 @@ const audit = [
 ];
 
 const priorities = [
-  { rank: "01", label: "Réduire la dépendance au dirigeant", emphasis: true },
-  { rank: "02", label: "Documenter les processus clés", emphasis: false },
-  { rank: "03", label: "Préparer le plan de relève", emphasis: false },
+  { label: "Réduire la dépendance au dirigeant", emphasis: true },
+  { label: "Documenter les processus clés", emphasis: false },
+  { label: "Préparer le plan de relève", emphasis: false },
 ];
 
 const hours = [8, 10, 12, 14, 16, 18];
@@ -84,7 +84,7 @@ export default function MethodBento() {
         <div className="flex flex-col border-t border-parchment/15">
           {priorities.map((p, i) => (
             <motion.div
-              key={p.rank}
+              key={p.label}
               initial={{ opacity: 0, x: 16 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={viewport}
@@ -93,21 +93,8 @@ export default function MethodBento() {
                 p.emphasis ? "bg-parchment/5" : ""
               }`}
             >
-              <span
-                className={`font-[family-name:var(--font-fraunces)] text-sm italic ${
-                  p.emphasis ? "text-brass" : "text-parchment/40"
-                }`}
-              >
-                {p.rank}
-              </span>
+              <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${p.emphasis ? "bg-brass" : "bg-parchment/30"}`} aria-hidden />
               <span className="min-w-0">
-                <span
-                  className={`block text-[0.65rem] font-semibold uppercase tracking-[0.14em] ${
-                    p.emphasis ? "text-brass" : "text-parchment/40"
-                  }`}
-                >
-                  Priorité {i + 1}
-                </span>
                 <span
                   className={`mt-0.5 block text-sm font-medium ${
                     p.emphasis ? "text-parchment" : "text-parchment/55"

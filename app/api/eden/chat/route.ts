@@ -156,7 +156,12 @@ export async function POST(request: Request) {
     return Response.json({ error: "Non authentifié." }, { status: 401 });
   }
 
-  let body: { conversationId?: string | null; content?: string };
+  let body: {
+    conversationId?: string | null;
+    content?: string;
+    /** Page active de l'espace au moment de l'envoi (contexte d'interface). */
+    pageContext?: string;
+  };
   try {
     body = await request.json();
   } catch {
@@ -421,8 +426,19 @@ export async function POST(request: Request) {
       ),
     },
     ...history,
-    { role: "user", content },
   ];
+
+  // Contexte d'interface : Eden sait quelle page de l'espace est ouverte,
+  // sans que l'utilisateur ait à le répéter. Borné et purement informatif.
+  const pageContext = (body.pageContext ?? "").trim().slice(0, 120);
+  if (pageContext) {
+    messages.push({
+      role: "system",
+      content: `L'utilisateur consulte actuellement la page « ${pageContext} » de son espace. S'il emploie des démonstratifs vagues (« ce dossier », « cette étape »), c'est probablement de cela qu'il parle.`,
+    });
+  }
+
+  messages.push({ role: "user", content });
 
   // ─── Stream vers le client ───
   const stream = new ReadableStream<Uint8Array>({

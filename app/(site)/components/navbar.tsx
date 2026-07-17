@@ -10,19 +10,21 @@ import { createClient } from "@/lib/supabase/client";
 import logo from "@/public/logo-nedexia.png";
 
 /**
- * Barre de navigation — en-tête de page du « carnet de terrain » (voir
- * /financement) : bandeau parchemin plat souligné d'un filet d'encre,
- * liens en petites capitales, entrée active marquée au rouille. Pas de
- * pilule de verre flottante ni d'ombres SaaS. Le CTA reprend le bouton
- * « scellé » à coin coupé, en version compacte.
+ * Navigation publique : un repère sobre et institutionnel qui laisse la
+ * promesse financement prendre toute la place dans le premier écran.
  */
 
 const links = [
   { href: "/financement", label: "Financement" },
   { href: "/eden", label: "Eden" },
-  { href: "/matching", label: "Matching" },
-  { href: "/psychologie", label: "Psychologie" },
   { href: "/score", label: "Score" },
+  { href: "/matching", label: "Matching" },
+];
+
+const homeLinks = [
+  { href: "#diagnostic", label: "Diagnostic" },
+  { href: "#ressources", label: "Ressources" },
+  { href: "/eden", label: "Eden" },
 ];
 
 const NOTCH = {
@@ -30,11 +32,14 @@ const NOTCH = {
 };
 
 function isActive(pathname: string, href: string) {
+  if (href.startsWith("#")) return false;
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export default function Navbar() {
   const pathname = usePathname();
+  const isHome = pathname === "/";
+  const isEden = pathname === "/eden";
   const [open, setOpen] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
@@ -51,42 +56,56 @@ export default function Navbar() {
 
   const authHref = userEmail ? "/espace/entreprise" : "/connexion";
   const authLabel = userEmail ? "Mon espace" : "Connexion";
+  const navLinks = isHome ? homeLinks : links;
+  const primaryHref = isHome ? "#diagnostic" : "/espace";
+  const primaryLabel = isHome ? "Faire le diagnostic" : "Voir mon potentiel";
 
   return (
     <header
-      className={`${fraunces.variable} sticky top-0 z-50 border-b border-ink/15 bg-parchment/95 backdrop-blur-sm`}
+      className={`${fraunces.variable} sticky top-0 z-50 bg-transparent px-3 pt-3 sm:px-5`}
     >
-      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+      <nav className={`mx-auto flex h-[4.5rem] max-w-[92rem] items-center justify-between gap-5 rounded-[1.25rem] border px-5 shadow-[0_8px_28px_rgba(27,35,39,0.08)] backdrop-blur-md sm:px-8 lg:px-12 ${isHome ? "border-[#d9dfdc]/90 bg-[#f7f8f6]/90" : isEden ? "border-[#eef0ff]/12 bg-[#0d0f2e]/88 shadow-[0_12px_36px_rgba(0,0,0,0.22)]" : "border-ink/10 bg-[#f4f1e8]/92"}`}>
         <Link
           href="/"
           onClick={() => setOpen(false)}
           className="flex shrink-0 items-center gap-3 transition-opacity hover:opacity-80"
           aria-label="Accueil Nedexia"
         >
-          <Image src={logo} alt="Nedexia" className="h-6 w-auto sm:h-7" priority />
-          <span className="hidden h-3.5 w-px bg-ink/15 lg:block" />
-          <span className="hidden font-[family-name:var(--font-fraunces)] text-xs italic text-brass lg:block">
-            jardin d&rsquo;entreprises
-          </span>
+          <Image src={logo} alt="Nedexia" className={`h-7 w-auto sm:h-8 ${isEden ? "brightness-0 invert" : ""}`} priority />
+          {!isHome && !isEden ? (
+            <>
+              <span className="hidden h-3.5 w-px bg-ink/15 lg:block" />
+              <span className="hidden font-[family-name:var(--font-fraunces)] text-xs italic text-brass lg:block">financement accompagné</span>
+            </>
+          ) : null}
         </Link>
 
-        {/* Desktop — liens de registre */}
-        <div className="hidden items-center gap-7 md:flex">
-          {links.map((link) => {
+        <div className="hidden items-center gap-9 md:flex">
+          {navLinks.map((link) => {
             const active = isActive(pathname, link.href);
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative py-1.5 text-[0.72rem] font-semibold uppercase tracking-[0.16em] transition-colors ${
-                  active ? "text-rust" : "text-ink-soft hover:text-ink"
+                className={`relative py-1.5 text-sm font-medium tracking-[-0.02em] transition-colors ${
+                  active
+                    ? isHome
+                      ? "text-[#5966e8]"
+                      : isEden
+                        ? "text-[#99ca3c]"
+                        : "text-rust"
+                    : isHome
+                      ? "text-[#697478] hover:text-[#1b2327]"
+                      : isEden
+                        ? "text-[#a6abd1] hover:text-[#eef0ff]"
+                        : "text-ink-soft hover:text-ink"
                 }`}
               >
                 {link.label}
                 {active ? (
                   <span
                     aria-hidden
-                    className="absolute inset-x-0 bottom-0 h-[2px] bg-rust"
+                    className={`absolute inset-x-0 bottom-0 h-px ${isHome ? "bg-[#5966e8]" : isEden ? "bg-[#99ca3c]" : "bg-rust"}`}
                   />
                 ) : null}
               </Link>
@@ -94,26 +113,26 @@ export default function Navbar() {
           })}
         </div>
 
-        <div className="hidden items-center gap-5 md:flex">
+        <div className="hidden items-center gap-6 md:flex">
           <Link
             href={authHref}
-            className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ink-soft transition-colors hover:text-ink"
+            className={`text-sm font-medium tracking-[-0.02em] transition-colors ${isHome ? "text-[#697478] hover:text-[#1b2327]" : isEden ? "text-[#a6abd1] hover:text-[#eef0ff]" : "text-ink-soft hover:text-ink"}`}
           >
             {authLabel}
           </Link>
           <Link
-            href="/espace"
-            style={NOTCH}
-            className="relative inline-flex items-center bg-ink px-5 py-2.5 text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-parchment transition-colors before:absolute before:inset-x-0 before:bottom-0 before:h-[2px] before:bg-rust before:content-[''] hover:bg-[#232e3d]"
+            href={primaryHref}
+            style={isHome || isEden ? undefined : NOTCH}
+            className={`relative inline-flex items-center px-4 py-2.5 text-sm font-medium tracking-[-0.02em] transition-colors ${isHome ? "border border-[#1b2327] bg-[#1b2327] text-[#f7f8f6] hover:bg-[#5966e8]" : isEden ? "border border-[#99ca3c]/70 bg-[#99ca3c] text-[#0a0c26] hover:border-[#eef0ff] hover:bg-[#eef0ff]" : "bg-ink text-parchment before:absolute before:inset-x-0 before:bottom-0 before:h-[2px] before:bg-rust before:content-[''] hover:bg-[#232e3d]"}`}
           >
-            Commencer
+            {primaryLabel}
           </Link>
         </div>
 
         {/* Mobile toggle */}
         <button
           type="button"
-          className="flex h-9 w-9 items-center justify-center text-ink transition-colors hover:text-rust md:hidden"
+          className={`flex h-10 w-10 items-center justify-center transition-colors md:hidden ${isHome ? "text-[#1b2327] hover:text-[#5966e8]" : isEden ? "text-[#eef0ff] hover:text-[#99ca3c]" : "text-ink hover:text-rust"}`}
           aria-expanded={open}
           aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
           onClick={() => setOpen(!open)}
@@ -136,25 +155,31 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile — page de registre dépliée */}
       {open && (
-        <div className="border-t border-ink/15 bg-parchment md:hidden">
-          <div className="mx-auto flex max-w-6xl flex-col px-4 py-2 sm:px-6">
-            {links.map((link, i) => {
+        <div className={`mx-auto mt-2 max-w-[92rem] overflow-hidden rounded-[1.25rem] border shadow-[0_8px_28px_rgba(27,35,39,0.08)] md:hidden ${isHome ? "border-[#d9dfdc]/90 bg-[#f7f8f6]/95" : isEden ? "border-[#eef0ff]/12 bg-[#0d0f2e]/96" : "border-ink/10 bg-[#f4f1e8]/95"}`}>
+          <div className="mx-auto flex max-w-[92rem] flex-col px-5 py-2 sm:px-8 lg:px-12">
+            {navLinks.map((link) => {
               const active = isActive(pathname, link.href);
               return (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="flex items-baseline gap-4 border-b border-dotted border-ink/20 py-3.5"
+                  className={`flex items-baseline border-b py-4 ${isHome ? "border-[#d9dfdc]" : isEden ? "border-[#eef0ff]/12" : "border-dotted border-ink/20"}`}
                 >
-                  <span className="w-6 font-[family-name:var(--font-fraunces)] text-xs italic text-brass">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
                   <span
-                    className={`text-[0.78rem] font-semibold uppercase tracking-[0.16em] ${
-                      active ? "text-rust" : "text-ink"
+                    className={`text-base font-medium tracking-[-0.02em] ${
+                      active
+                        ? isHome
+                          ? "text-[#5966e8]"
+                          : isEden
+                            ? "text-[#99ca3c]"
+                            : "text-rust"
+                        : isHome
+                          ? "text-[#1b2327]"
+                          : isEden
+                            ? "text-[#eef0ff]"
+                            : "text-ink"
                     }`}
                   >
                     {link.label}
@@ -165,21 +190,20 @@ export default function Navbar() {
             <Link
               href={authHref}
               onClick={() => setOpen(false)}
-              className="flex items-baseline gap-4 py-3.5"
+              className="flex items-baseline py-4"
             >
-              <span className="w-6" aria-hidden />
-              <span className="text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-ink-soft">
+              <span className={`text-base font-medium tracking-[-0.02em] ${isHome ? "text-[#697478]" : isEden ? "text-[#a6abd1]" : "text-ink-soft"}`}>
                 {authLabel}
               </span>
             </Link>
             <div className="pb-4 pt-1">
               <Link
-                href="/espace"
+                href={primaryHref}
                 onClick={() => setOpen(false)}
-                style={NOTCH}
-                className="relative flex items-center justify-center bg-ink px-5 py-3.5 text-[0.78rem] font-semibold uppercase tracking-[0.1em] text-parchment before:absolute before:inset-x-0 before:bottom-0 before:h-[2px] before:bg-rust before:content-['']"
+                style={isHome || isEden ? undefined : NOTCH}
+                className={`relative flex items-center justify-center px-5 py-3.5 text-base font-medium tracking-[-0.02em] ${isHome ? "border border-[#1b2327] bg-[#1b2327] text-[#f7f8f6]" : isEden ? "border border-[#99ca3c]/70 bg-[#99ca3c] text-[#0a0c26]" : "bg-ink text-parchment before:absolute before:inset-x-0 before:bottom-0 before:h-[2px] before:bg-rust before:content-['']"}`}
               >
-                Commencer
+                {primaryLabel}
               </Link>
             </div>
           </div>
