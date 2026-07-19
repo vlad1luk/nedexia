@@ -64,14 +64,14 @@ export default function Navbar() {
     <header
       className={`${fraunces.variable} sticky top-0 z-50 bg-transparent px-3 pt-3 sm:px-5`}
     >
-      <nav className={`mx-auto flex h-[4.5rem] max-w-[92rem] items-center justify-between gap-5 rounded-[1.25rem] border px-5 shadow-[0_8px_28px_rgba(27,35,39,0.08)] backdrop-blur-md sm:px-8 lg:px-12 ${isHome ? "border-[#d9dfdc]/90 bg-[#f7f8f6]/90" : isEden ? "border-[#eef0ff]/12 bg-[#0d0f2e]/88 shadow-[0_12px_36px_rgba(0,0,0,0.22)]" : "border-ink/10 bg-[#f4f1e8]/92"}`}>
+      <nav className={`mx-auto flex h-[4.5rem] max-w-[92rem] items-center justify-between gap-5 rounded-[1.25rem] border px-5 shadow-[0_8px_28px_rgba(27,35,39,0.08)] backdrop-blur-md sm:px-8 lg:px-12 ${isHome ? "border-[#d9dfdc]/90 bg-[#f7f8f6]/90" : isEden ? "border-[#3a378f]/12 bg-white/88 shadow-[0_16px_52px_rgba(58,55,143,0.09)] backdrop-blur-xl" : "border-ink/10 bg-[#f4f1e8]/92"}`}>
         <Link
           href="/"
           onClick={() => setOpen(false)}
           className="flex shrink-0 items-center gap-3 transition-opacity hover:opacity-80"
           aria-label="Accueil Nedexia"
         >
-          <Image src={logo} alt="Nedexia" className={`h-7 w-auto sm:h-8 ${isEden ? "brightness-0 invert" : ""}`} priority />
+          <Image src={logo} alt="Nedexia" className="h-7 w-auto sm:h-8" priority />
           {!isHome && !isEden ? (
             <>
               <span className="hidden h-3.5 w-px bg-ink/15 lg:block" />
@@ -92,12 +92,12 @@ export default function Navbar() {
                     ? isHome
                       ? "text-[#5966e8]"
                       : isEden
-                        ? "text-[#99ca3c]"
+                        ? "text-[#3a378f]"
                         : "text-rust"
                     : isHome
                       ? "text-[#697478] hover:text-[#1b2327]"
                       : isEden
-                        ? "text-[#a6abd1] hover:text-[#eef0ff]"
+                        ? "text-[#62617d] hover:text-[#282654]"
                         : "text-ink-soft hover:text-ink"
                 }`}
               >
@@ -105,7 +105,7 @@ export default function Navbar() {
                 {active ? (
                   <span
                     aria-hidden
-                    className={`absolute inset-x-0 bottom-0 h-px ${isHome ? "bg-[#5966e8]" : isEden ? "bg-[#99ca3c]" : "bg-rust"}`}
+                    className={`absolute inset-x-0 bottom-0 h-px ${isHome ? "bg-[#5966e8]" : isEden ? "bg-[#3a378f]" : "bg-rust"}`}
                   />
                 ) : null}
               </Link>
@@ -116,14 +116,14 @@ export default function Navbar() {
         <div className="hidden items-center gap-6 md:flex">
           <Link
             href={authHref}
-            className={`text-sm font-medium tracking-[-0.02em] transition-colors ${isHome ? "text-[#697478] hover:text-[#1b2327]" : isEden ? "text-[#a6abd1] hover:text-[#eef0ff]" : "text-ink-soft hover:text-ink"}`}
+            className={`text-sm font-medium tracking-[-0.02em] transition-colors ${isHome ? "text-[#697478] hover:text-[#1b2327]" : isEden ? "text-[#62617d] hover:text-[#282654]" : "text-ink-soft hover:text-ink"}`}
           >
             {authLabel}
           </Link>
           <Link
             href={primaryHref}
             style={isHome || isEden ? undefined : NOTCH}
-            className={`relative inline-flex items-center px-4 py-2.5 text-sm font-medium tracking-[-0.02em] transition-colors ${isHome ? "border border-[#1b2327] bg-[#1b2327] text-[#f7f8f6] hover:bg-[#5966e8]" : isEden ? "border border-[#99ca3c]/70 bg-[#99ca3c] text-[#0a0c26] hover:border-[#eef0ff] hover:bg-[#eef0ff]" : "bg-ink text-parchment before:absolute before:inset-x-0 before:bottom-0 before:h-[2px] before:bg-rust before:content-[''] hover:bg-[#232e3d]"}`}
+            className={`relative inline-flex items-center px-4 py-2.5 text-sm font-medium tracking-[-0.02em] transition-all ${isHome ? "border border-[#1b2327] bg-[#1b2327] text-[#f7f8f6] hover:bg-[#5966e8]" : isEden ? "rounded-full border border-[#3a378f] bg-[#3a378f] text-white shadow-[0_8px_28px_rgba(58,55,143,0.16)] hover:-translate-y-0.5 hover:bg-[#2f2c79]" : "bg-ink text-parchment before:absolute before:inset-x-0 before:bottom-0 before:h-[2px] before:bg-rust before:content-[''] hover:bg-[#232e3d]"}`}
           >
             {primaryLabel}
           </Link>
@@ -132,7 +132,7 @@ export default function Navbar() {
         {/* Mobile toggle */}
         <button
           type="button"
-          className={`flex h-10 w-10 items-center justify-center transition-colors md:hidden ${isHome ? "text-[#1b2327] hover:text-[#5966e8]" : isEden ? "text-[#eef0ff] hover:text-[#99ca3c]" : "text-ink hover:text-rust"}`}
+          className={`flex h-10 w-10 items-center justify-center transition-colors md:hidden ${isHome ? "text-[#1b2327] hover:text-[#5966e8]" : isEden ? "text-[#3a378f] hover:text-[#22b9dc]" : "text-ink hover:text-rust"}`}
           aria-expanded={open}
           aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
           onClick={() => setOpen(!open)}
@@ -156,7 +156,7 @@ export default function Navbar() {
       </nav>
 
       {open && (
-        <div className={`mx-auto mt-2 max-w-[92rem] overflow-hidden rounded-[1.25rem] border shadow-[0_8px_28px_rgba(27,35,39,0.08)] md:hidden ${isHome ? "border-[#d9dfdc]/90 bg-[#f7f8f6]/95" : isEden ? "border-[#eef0ff]/12 bg-[#0d0f2e]/96" : "border-ink/10 bg-[#f4f1e8]/95"}`}>
+        <div className={`mx-auto mt-2 max-w-[92rem] overflow-hidden rounded-[1.25rem] border shadow-[0_8px_28px_rgba(27,35,39,0.08)] backdrop-blur-xl md:hidden ${isHome ? "border-[#d9dfdc]/90 bg-[#f7f8f6]/95" : isEden ? "border-[#3a378f]/12 bg-white/96" : "border-ink/10 bg-[#f4f1e8]/95"}`}>
           <div className="mx-auto flex max-w-[92rem] flex-col px-5 py-2 sm:px-8 lg:px-12">
             {navLinks.map((link) => {
               const active = isActive(pathname, link.href);
@@ -165,7 +165,7 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className={`flex items-baseline border-b py-4 ${isHome ? "border-[#d9dfdc]" : isEden ? "border-[#eef0ff]/12" : "border-dotted border-ink/20"}`}
+                  className={`flex items-baseline border-b py-4 ${isHome ? "border-[#d9dfdc]" : isEden ? "border-[#3a378f]/10" : "border-dotted border-ink/20"}`}
                 >
                   <span
                     className={`text-base font-medium tracking-[-0.02em] ${
@@ -173,12 +173,12 @@ export default function Navbar() {
                         ? isHome
                           ? "text-[#5966e8]"
                           : isEden
-                            ? "text-[#99ca3c]"
+                          ? "text-[#3a378f]"
                             : "text-rust"
                         : isHome
                           ? "text-[#1b2327]"
                           : isEden
-                            ? "text-[#eef0ff]"
+                            ? "text-[#282654]"
                             : "text-ink"
                     }`}
                   >
@@ -192,7 +192,7 @@ export default function Navbar() {
               onClick={() => setOpen(false)}
               className="flex items-baseline py-4"
             >
-              <span className={`text-base font-medium tracking-[-0.02em] ${isHome ? "text-[#697478]" : isEden ? "text-[#a6abd1]" : "text-ink-soft"}`}>
+              <span className={`text-base font-medium tracking-[-0.02em] ${isHome ? "text-[#697478]" : isEden ? "text-[#62617d]" : "text-ink-soft"}`}>
                 {authLabel}
               </span>
             </Link>
@@ -201,7 +201,7 @@ export default function Navbar() {
                 href={primaryHref}
                 onClick={() => setOpen(false)}
                 style={isHome || isEden ? undefined : NOTCH}
-                className={`relative flex items-center justify-center px-5 py-3.5 text-base font-medium tracking-[-0.02em] ${isHome ? "border border-[#1b2327] bg-[#1b2327] text-[#f7f8f6]" : isEden ? "border border-[#99ca3c]/70 bg-[#99ca3c] text-[#0a0c26]" : "bg-ink text-parchment before:absolute before:inset-x-0 before:bottom-0 before:h-[2px] before:bg-rust before:content-['']"}`}
+                className={`relative flex items-center justify-center px-5 py-3.5 text-base font-medium tracking-[-0.02em] ${isHome ? "border border-[#1b2327] bg-[#1b2327] text-[#f7f8f6]" : isEden ? "rounded-full border border-[#3a378f] bg-[#3a378f] text-white" : "bg-ink text-parchment before:absolute before:inset-x-0 before:bottom-0 before:h-[2px] before:bg-rust before:content-['']"}`}
               >
                 {primaryLabel}
               </Link>
