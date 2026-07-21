@@ -4,8 +4,9 @@ import Link from "next/link";
 import logo from "@/public/logo-nedexia.png";
 
 const footerLinks = [
-  { href: "/#diagnostic", label: "Diagnostic" },
-  { href: "/#ressources", label: "Ressources" },
+  { href: "/financement", label: "Financement" },
+  { href: "/financement#diagnostic", label: "Diagnostic" },
+  { href: "/financement#ressources", label: "Ressources" },
   { href: "/eden", label: "Eden" },
   { href: "/eden#fondateurs", label: "Fondateurs" },
   { href: "/connexion", label: "Connexion" },
